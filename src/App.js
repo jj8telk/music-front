@@ -7,6 +7,8 @@ import Release from "./components/Release/Release";
 import Releases from "./components/Release/Releases";
 
 function App() {
+  require("dotenv").config();
+
   return (
     <Router>
       <Layout>

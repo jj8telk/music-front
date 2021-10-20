@@ -1,10 +1,11 @@
 export const endpoints = {
   ARTIST: "Artist",
+  FILE: "File",
   RELEASE: "Release",
 };
 
 export function url(path) {
-  return "http://localhost:53866/" + path;
+  return process.env.REACT_APP_CORE_API + path;
 }
 
 export const runApi = (apiCall, response) => {

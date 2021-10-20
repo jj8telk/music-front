@@ -1,10 +1,18 @@
 import { useState, useEffect } from "react";
 
 import { Link } from "react-router-dom";
-import { Segment, Grid, Button, Icon, Table, Label } from "semantic-ui-react";
+import {
+  Segment,
+  Grid,
+  Button,
+  Icon,
+  Table,
+  Dropdown,
+} from "semantic-ui-react";
 
 import { runApi } from "../../services/services";
 import releaseService from "../../services/release.service";
+import artistService from "../../services/artist.service";
 
 import Paging from "../Data/Paging";
 import FormatDescription from "../widgets/FormatDescription";
@@ -19,6 +27,18 @@ const Releases = () => {
 
   const [currentPage, setCurrentPage] = useState(1);
   const [pageNumbers, setPageNumbers] = useState([]);
+
+  // Filters
+  const [artistOptions, setArtistOptions] = useState(null);
+
+  const boolOptions = [
+    { key: 0, value: true, text: "Yes" },
+    { key: 1, value: false, text: "No" },
+  ];
+
+  useEffect(() => {
+    runApi(artistService.getReleaseArtists, setArtistOptions);
+  }, []);
 
   useEffect(() => {
     getReleases();
@@ -47,8 +67,53 @@ const Releases = () => {
             <Segment>
               <Grid columns={16}>
                 <Grid.Row>
-                  <Grid.Column width={2}>
+                  <Grid.Column width={3}>
                     <h4>Artist</h4>
+                    <Dropdown
+                      placeholder='Select Artist'
+                      fluid
+                      search
+                      selection
+                      clearable
+                      options={
+                        artistOptions !== null
+                          ? artistOptions.map((artist) => {
+                              return {
+                                key: artist.artistId,
+                                value: artist.artistId,
+                                text: artist.name,
+                              };
+                            })
+                          : null
+                      }
+                      disabled={artistOptions === null}
+                      loading={artistOptions === null}
+                      onChange={(event, data) =>
+                        setFilter({
+                          ...filter,
+                          artistId: data.value === "" ? null : data.value,
+                        })
+                      }
+                    ></Dropdown>
+                  </Grid.Column>
+                  <Grid.Column width={1}>
+                    <h4>Owned?</h4>
+                    <Dropdown
+                      placeholder='Owned?'
+                      fluid
+                      search
+                      selection
+                      clearable
+                      options={boolOptions}
+                      disabled={boolOptions === null}
+                      loading={boolOptions === null}
+                      onChange={(event, data) =>
+                        setFilter({
+                          ...filter,
+                          own: data.value === "" ? null : data.value,
+                        })
+                      }
+                    ></Dropdown>
                   </Grid.Column>
                 </Grid.Row>
                 <Grid.Row>
@@ -80,7 +145,7 @@ const Releases = () => {
                   </Table.Row>
                   <Table.Row>
                     <Table.HeaderCell></Table.HeaderCell>
-                    <Table.HeaderCell>Artist</Table.HeaderCell>
+                    <Table.HeaderCell>Album Artist</Table.HeaderCell>
                     <Table.HeaderCell></Table.HeaderCell>
                     <Table.HeaderCell>Release</Table.HeaderCell>
                     <Table.HeaderCell>Format</Table.HeaderCell>
@@ -100,11 +165,12 @@ const Releases = () => {
                             color={release.own ? "green" : "red"}
                           />
                         </Table.Cell>
-                        <Table.Cell>{release.artistsSort}</Table.Cell>
+                        <Table.Cell>{release.albumArtist}</Table.Cell>
                         <Table.Cell>
                           <img
                             src={
-                              "http://localhost:53866/Release/formatIcon/" +
+                              process.env.REACT_APP_CORE_API +
+                              "Release/formatIcon/" +
                               release.formatString
                             }
                             style={{ height: 20 }}

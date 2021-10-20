@@ -14,18 +14,38 @@ import {
 import { runApi } from "../../services/services";
 import releaseService from "../../services/release.service";
 
+import Artist from "../widgets/Artist";
 import FormatDescription from "../widgets/FormatDescription";
 import Genre from "../widgets/Genre";
-import MatchFiles from "../File/MatchFiles";
+import TrackManager from "./TrackManager";
 import TrackRow from "../Track/TrackRow";
 
 const Release = () => {
   let { id } = useParams();
   const [release, setRelease] = useState(null);
 
+  const [showTrackManagement, setShowTrackManagement] = useState(false);
+
   useEffect(() => {
-    runApi(() => releaseService.getModel(id), setRelease);
+    runApi(
+      () => releaseService.getModel(id),
+      (data) => {
+        setRelease(data);
+      }
+    );
   }, [id]);
+
+  const saveFolder = (folder) => {
+    let temp = release;
+    temp.folder = folder;
+
+    runApi(
+      () => releaseService.saveModel(temp),
+      (data) => {
+        setRelease(data);
+      }
+    );
+  };
 
   return (
     <Grid columns={16}>
@@ -33,98 +53,285 @@ const Release = () => {
         <>
           <Grid.Row>
             <Grid.Column width={3}>
-              <img src={release.images[0].uri} style={{ height: 300 }} />
+              {release.images.length > 0 ? (
+                <img
+                  src={release.images[0].uri}
+                  style={{ height: 300 }}
+                  alt='artwork'
+                />
+              ) : null}
             </Grid.Column>
             <Grid.Column width={7}>
-              {release.artists.map((artist) => {
-                return (
-                  <span
-                    style={{
-                      marginRight: 15,
-                      fontSize: 24,
-                      fontWeight: "bold",
-                    }}
-                  >
-                    <Link to={"/artist/" + artist.artistId}>
-                      {artist.anv !== "" ? artist.anv : artist.name}
-                    </Link>
-                    {artist.anv !== "" ? "*" : null}
-                  </span>
-                );
-              })}
-              <h3 style={{ marginTop: 5 }}>{release.title}</h3>
-              <div>
-                {release.entities
-                  .filter((x) => x.entityTypeName === "Label")
-                  .map((entity) => {
-                    return (
-                      <Label>
-                        {entity.entityName}
-                        <Label.Detail>{entity.catNo}</Label.Detail>
-                      </Label>
-                    );
-                  })}
-              </div>
-              <div style={{ marginTop: 10 }}>
-                <Label image color='grey' basic>
-                  {release.country}
-                  {/* <Label.Detail>
-                    <img
-                      src={
-                        "http://localhost:53866/Release/flag/" + release.country
-                      }
-                      style={{ height: 20 }}
-                    />
-                  </Label.Detail> */}
-                </Label>
-              </div>
-              <div style={{ marginTop: 10 }}>
-                {release.releaseDateFormatted}
-              </div>
-              <div style={{ marginTop: 10 }}>
-                {release.formats.map((format) => {
-                  return (
+              <Grid columns={16}>
+                <Grid.Row>
+                  <Grid.Column width={16}>
+                    <Artist release={release} />
+                    <h3 style={{ marginTop: 5 }}>{release.title}</h3>
+                  </Grid.Column>
+                </Grid.Row>
+                <Grid.Row>
+                  <Grid.Column width={16}>
                     <div>
-                      <FormatDescription description={format.format} />
-                      {format.descriptions.map((description) => {
-                        return <FormatDescription description={description} />;
+                      {release.entities
+                        .filter((x) => x.entityTypeName === "Label")
+                        .map((entity) => {
+                          return (
+                            <Label key={entity.entityId}>
+                              {entity.entityName}
+                              <Label.Detail>{entity.catNo}</Label.Detail>
+                            </Label>
+                          );
+                        })}
+                    </div>
+                    <div style={{ marginTop: 10 }}>
+                      {release.releaseDateFormatted} &mdash;{release.country}
+                    </div>
+                    <div style={{ marginTop: 10 }}>
+                      {release.formats.map((format, idx) => {
+                        return (
+                          <div key={idx} style={{ marginBottom: 5 }}>
+                            <Label image>
+                              <img
+                                src={
+                                  process.env.REACT_APP_CORE_API +
+                                  "Release/formatIcon/" +
+                                  format.format
+                                }
+                              />
+                              {format.qty > 1 ? (
+                                <span>{format.qty}x</span>
+                              ) : null}
+                              {format.format}
+                              {format.text !== null ? (
+                                <Label.Detail>{format.text}</Label.Detail>
+                              ) : null}
+                            </Label>
+
+                            {format.descriptions.map((description, idx) => {
+                              return (
+                                <FormatDescription
+                                  key={idx}
+                                  description={description}
+                                />
+                              );
+                            })}
+                          </div>
+                        );
                       })}
                     </div>
-                  );
-                })}
-              </div>
+                  </Grid.Column>
+                </Grid.Row>
+              </Grid>
+
               <div style={{ marginTop: 10 }}>
-                {release.genres !== null
-                  ? release.genres.map((genre) => {
-                      return <Genre genre={genre.name} />;
-                    })
-                  : null}
-              </div>
-              <div style={{ marginTop: 10 }}>
-                {release.styles !== null
-                  ? release.styles.map((style) => {
-                      return <Label basic>{style.name}</Label>;
-                    })
-                  : null}
-              </div>
-              <div style={{ marginTop: 10 }}>
-                <a href={release.uri} target='_blank'>
+                <a href={release.uri} target='_blank' rel='noreferrer'>
                   <img
                     src='https://www.maltego.com/images/uploads/discogs-primary-logo.png'
                     style={{ height: 30 }}
+                    alt='discogs logo'
                   />
                 </a>
               </div>
             </Grid.Column>
-            <Grid.Column width={6}>
-              {release.notes !== null ? (
-                <>
-                  <Header as='h4' dividing>
-                    Notes
-                  </Header>
-                  <div dangerouslySetInnerHTML={{ __html: release.notes }} />
-                </>
-              ) : null}
+            <Grid.Column width={6} textAlign='right'>
+              <div style={{ textAlign: "right" }}>
+                {release.genres !== null
+                  ? release.genres.map((genre) => {
+                      return (
+                        <Genre
+                          key={genre.genreId}
+                          genre={genre.name}
+                          size='large'
+                        />
+                      );
+                    })
+                  : null}
+              </div>
+              <div
+                style={{ marginTop: 10, marginBottom: 15, textAlign: "right" }}
+              >
+                {release.styles !== null
+                  ? release.styles.map((style) => {
+                      return (
+                        <span
+                          key={style.styleId}
+                          style={{ marginRight: 20, fontSize: 13 }}
+                        >
+                          {style.name}
+                        </span>
+                      );
+                    })
+                  : null}
+              </div>
+              {/* <Grid columns={4}>
+                <Grid.Row>
+                  <Grid.Column>
+                    <h5 style={{ margin: 0 }}>Written By</h5>
+                    <List vertical>
+                      {release.extraArtists
+                        .filter(
+                          (x) =>
+                            x.role.indexOf("Written") > -1 ||
+                            x.role.indexOf("Compose") > -1
+                        )
+                        .map((artist) => {
+                          return (
+                            <List.Item>
+                              <List.Content>
+                                <Link to={"/artist/" + artist.artistId}>
+                                  {artist.name}
+                                </Link>
+                              </List.Content>
+                            </List.Item>
+                          );
+                        })}
+                    </List>
+                  </Grid.Column>
+                  <Grid.Column>
+                    <h5 style={{ margin: 0 }}>Producer(s)</h5>
+                    <List vertical>
+                      {release.extraArtists
+                        .filter((x) => x.role.indexOf("Produce") > -1)
+                        .map((artist) => {
+                          return (
+                            <List.Item>
+                              <List.Content>
+                                <Link to={"/artist/" + artist.artistId}>
+                                  {artist.name}
+                                </Link>
+                              </List.Content>
+                            </List.Item>
+                          );
+                        })}
+                    </List>
+                  </Grid.Column>
+                  <Grid.Column>
+                    <h5 style={{ margin: 0 }}>Vocals</h5>
+                    <List vertical>
+                      {release.extraArtists
+                        .filter(
+                          (x) =>
+                            x.role.indexOf("Vocal") > -1 ||
+                            x.role.indexOf("Chorus") > -1
+                        )
+                        .map((artist) => {
+                          return (
+                            <List.Item>
+                              <List.Content>
+                                <Link to={"/artist/" + artist.artistId}>
+                                  {artist.name}
+                                </Link>
+                              </List.Content>
+                            </List.Item>
+                          );
+                        })}
+                    </List>
+                  </Grid.Column>
+                  <Grid.Column>
+                    <h5 style={{ margin: 0 }}>Performers</h5>
+                    <List vertical>
+                      {release.extraArtists
+                        .filter(
+                          (x) =>
+                            x.role.indexOf("Guitar") > -1 ||
+                            x.role.indexOf("Bass") > -1 ||
+                            x.role.indexOf("Piano") > -1 ||
+                            x.role.indexOf("Organ") > -1 ||
+                            x.role.indexOf("Keyboard") > -1 ||
+                            x.role.indexOf("Synth") > -1 ||
+                            x.role.indexOf("Drum") > -1 ||
+                            x.role.indexOf("Percussion") > -1 ||
+                            x.role.indexOf("Performer") > -1 ||
+                            (x.role.indexOf("Orchestra") > -1 &&
+                              x.role.indexOf("Orchestrated") === -1)
+                        )
+                        .map((artist) => {
+                          return (
+                            <List.Item>
+                              <List.Content>
+                                <Link to={"/artist/" + artist.artistId}>
+                                  {artist.name}
+                                </Link>
+                              </List.Content>
+                            </List.Item>
+                          );
+                        })}
+                    </List>
+                  </Grid.Column>
+                  <Grid.Column>
+                    <h5 style={{ margin: 0 }}>Conductor(s)</h5>
+                    <List vertical>
+                      {release.extraArtists
+                        .filter((x) => x.role.indexOf("Conductor") > -1)
+                        .map((artist) => {
+                          return (
+                            <List.Item>
+                              <List.Content>
+                                <Link to={"/artist/" + artist.artistId}>
+                                  {artist.name}
+                                </Link>
+                              </List.Content>
+                            </List.Item>
+                          );
+                        })}
+                    </List>
+                  </Grid.Column>
+                </Grid.Row>
+              </Grid> */}
+              <List horizontal celled>
+                {release.extraArtists
+                  .filter(
+                    (x) =>
+                      x.role.indexOf("Written") > -1 ||
+                      x.role.indexOf("Compose") > -1 ||
+                      x.role.indexOf("Produce") > -1
+                  )
+                  .map((artist) => {
+                    return (
+                      <List.Item>
+                        <List.Content>
+                          <List.Header>{artist.role}</List.Header>
+                          <Link to={"/artist/" + artist.artistId}>
+                            {artist.anv !== null ? artist.anv : artist.name}
+                          </Link>
+                          {artist.anv !== null ? "*" : null}
+                        </List.Content>
+                      </List.Item>
+                    );
+                  })}
+              </List>
+              <List horizontal celled>
+                {release.extraArtists
+                  .filter(
+                    (x) =>
+                      x.role.indexOf("Vocal") > -1 ||
+                      x.role.indexOf("Chorus") > -1 ||
+                      x.role.indexOf("Guitar") > -1 ||
+                      x.role.indexOf("Bass") > -1 ||
+                      x.role.indexOf("Piano") > -1 ||
+                      x.role.indexOf("Organ") > -1 ||
+                      x.role.indexOf("Keyboard") > -1 ||
+                      x.role.indexOf("Synth") > -1 ||
+                      x.role.indexOf("Drum") > -1 ||
+                      x.role.indexOf("Percussion") > -1 ||
+                      x.role.indexOf("Performer") > -1 ||
+                      (x.role.indexOf("Orchestra") > -1 &&
+                        x.role.indexOf("Orchestrated") === -1)
+                  )
+                  .map((artist) => {
+                    return (
+                      <List.Item>
+                        <List.Content>
+                          <List.Header>{artist.role}</List.Header>
+                          <Link to={"/artist/" + artist.artistId}>
+                            {artist.anv !== null ? artist.anv : artist.name}
+                          </Link>
+                          {artist.anv !== null ? "*" : null}
+                        </List.Content>
+                      </List.Item>
+                    );
+                  })}
+              </List>
             </Grid.Column>
           </Grid.Row>
           <Grid.Row>
@@ -133,25 +340,38 @@ const Release = () => {
                 <span style={{ fontWeight: "bold", marginRight: 10 }}>
                   Tracklist
                 </span>
+                <Icon
+                  name='hdd'
+                  style={{ cursor: "pointer" }}
+                  onClick={() => setShowTrackManagement(true)}
+                />
                 <Modal
-                  trigger={
-                    <Icon
-                      name='refresh'
-                      style={{ marginRight: 10, cursor: "pointer" }}
-                    />
-                  }
+                  open={showTrackManagement}
+                  onClose={() => setShowTrackManagement(false)}
                 >
                   <Modal.Content>
-                    <MatchFiles release={release} />
+                    <TrackManager
+                      release={release}
+                      setRelease={setRelease}
+                      refreshRelease={() => {
+                        runApi(
+                          () => releaseService.getModel(id),
+                          (data) => {
+                            setRelease(data);
+                          }
+                        );
+                      }}
+                      onSaveSetFolder={saveFolder}
+                    />
                   </Modal.Content>
                 </Modal>
-                <Icon name='pencil' style={{ marginRight: 10 }} />
-                <Icon name='tag' style={{ marginRight: 10 }} />
               </div>
               <Table compact>
                 <Table.Body>
                   {release.tracks.map((track) => {
-                    return <TrackRow track={track} />;
+                    return (
+                      <TrackRow key={track.releaseTrackId} track={track} />
+                    );
                   })}
                 </Table.Body>
               </Table>
@@ -163,20 +383,18 @@ const Release = () => {
               <div>
                 <List vertical>
                   {release.extraArtists !== null
-                    ? release.extraArtists.map((artist) => {
+                    ? release.extraArtists.map((artist, idx) => {
                         return (
-                          <>
-                            <List.Item>
-                              <List.Content>
-                                <List.Header>
-                                  <Link to={"/artist/" + artist.artistId}>
-                                    {artist.name}
-                                  </Link>
-                                </List.Header>
-                                {artist.role}
-                              </List.Content>
-                            </List.Item>
-                          </>
+                          <List.Item key={idx}>
+                            <List.Content>
+                              <List.Header>
+                                <Link to={"/artist/" + artist.artistId}>
+                                  {artist.name}
+                                </Link>
+                              </List.Header>
+                              {artist.role}
+                            </List.Content>
+                          </List.Item>
                         );
                       })
                     : null}
@@ -190,20 +408,18 @@ const Release = () => {
               <div>
                 <List vertical>
                   {release.entities !== null
-                    ? release.entities.map((entity) => {
+                    ? release.entities.map((entity, idx) => {
                         return (
-                          <>
-                            <List.Item>
-                              <List.Content>
-                                <List.Header>
-                                  <Link to={"/entity/" + entity.entityId}>
-                                    {entity.entityName}
-                                  </Link>
-                                </List.Header>
-                                {entity.entityTypeName}
-                              </List.Content>
-                            </List.Item>
-                          </>
+                          <List.Item key={idx}>
+                            <List.Content>
+                              <List.Header>
+                                <Link to={"/entity/" + entity.entityId}>
+                                  {entity.entityName}
+                                </Link>
+                              </List.Header>
+                              {entity.entityTypeName}
+                            </List.Content>
+                          </List.Item>
                         );
                       })
                     : null}
@@ -215,24 +431,34 @@ const Release = () => {
               <div>
                 <List vertical>
                   {release.identifiers !== null
-                    ? release.identifiers.map((identifier) => {
+                    ? release.identifiers.map((identifier, idx) => {
                         return (
-                          <>
-                            <List.Item>
-                              <List.Content>
-                                <List.Header>{identifier.value}</List.Header>
-                                {identifier.type}{" "}
-                                {identifier.description !== null
-                                  ? " (" + identifier.description + ")"
-                                  : null}
-                              </List.Content>
-                            </List.Item>
-                          </>
+                          <List.Item key={idx}>
+                            <List.Content>
+                              <List.Header>{identifier.value}</List.Header>
+                              {identifier.type}{" "}
+                              {identifier.description !== null
+                                ? " (" + identifier.description + ")"
+                                : null}
+                            </List.Content>
+                          </List.Item>
                         );
                       })
                     : null}
                 </List>
               </div>
+            </Grid.Column>
+          </Grid.Row>
+          <Grid.Row>
+            <Grid.Column width={16}>
+              {release.notes !== null ? (
+                <>
+                  <Header as='h4' dividing>
+                    Notes
+                  </Header>
+                  <div dangerouslySetInnerHTML={{ __html: release.notes }} />
+                </>
+              ) : null}
             </Grid.Column>
           </Grid.Row>
         </>

@@ -1,6 +1,6 @@
 import { Label } from "semantic-ui-react";
 
-const Genre = ({ genre }) => {
+const Genre = ({ genre, size = "medium" }) => {
   var color = "lightgrey";
   switch (genre) {
     case "Electronic":
@@ -32,7 +32,11 @@ const Genre = ({ genre }) => {
       break;
   }
 
-  return <Label color={color}>{genre}</Label>;
+  return (
+    <Label color={color} size={size}>
+      {genre}
+    </Label>
+  );
 };
 
 export default Genre;

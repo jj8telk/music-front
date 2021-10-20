@@ -18,26 +18,29 @@ const TrackRow = ({ track }) => {
       <Table.Cell verticalAlign='top'>{track.position}</Table.Cell>
       <Table.Cell verticalAlign='top'>
         {track.artists !== null
-          ? track.artists.map((artist) => {
+          ? track.artists.map((artist, idx) => {
               return (
-                <>
+                <span key={idx}>
                   <Link to={"/artist/" + artist.artistId}>
-                    {artist.anv !== "" ? artist.anv : artist.name}
+                    {artist.anv !== null ? artist.anv : artist.name}
                   </Link>
-                  {artist.anv !== "" ? "*" : null}
-                </>
+                  {artist.anv !== null ? "*" : null}
+                </span>
               );
             })
           : null}
       </Table.Cell>
       <Table.Cell verticalAlign='top'>
         {track.title}
-        {track.extraArtist !== null
-          ? track.extraArtists.map((artist) => {
+        {track.extraArtists !== null
+          ? track.extraArtists.map((artist, idx) => {
               return (
-                <div style={{ marginLeft: 20, fontSize: 12 }}>
+                <div key={idx} style={{ marginLeft: 20, fontSize: 12 }}>
                   {artist.role} &mdash;{" "}
-                  <Link to={"/artist/" + artist.artistId}>{artist.name}</Link>
+                  <Link to={"/artist/" + artist.artistId}>
+                    {artist.anv !== null ? artist.anv : artist.name}
+                  </Link>
+                  {artist.anv !== null ? "*" : null}
                 </div>
               );
             })
@@ -50,7 +53,12 @@ const TrackRow = ({ track }) => {
       </Table.Cell>
       <Table.Cell verticalAlign='top'>
         {track.fileId !== null ? (
-          <Icon name='check' color='green' />
+          <>
+            <Icon name='check' color='green' style={{ marginRight: 10 }} />
+            {!track.fileNamed ? (
+              <Icon name='exclamation circle' color='yellow' />
+            ) : null}
+          </>
         ) : (
           <Icon name='x' color='red' />
         )}
