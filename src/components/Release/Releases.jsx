@@ -177,7 +177,7 @@ const Releases = () => {
                           />
                         </Table.Cell>
                         <Table.Cell>
-                          <Link to={"/release/" + release.releaseId}>
+                          <Link to={"/release/" + release.discogsId}>
                             {release.title}
                           </Link>
                         </Table.Cell>
