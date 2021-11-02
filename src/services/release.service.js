@@ -5,6 +5,7 @@ import { authHeader } from "./helpers/auth-header";
 
 const releaseService = {
   getModel,
+  getDiscogsModel,
   saveModel,
   getList,
   getFileList,
@@ -13,11 +14,16 @@ const releaseService = {
   previewRenameFiles,
   renameFiles,
   tagFiles,
+  getReleaseIdFromDiscogsId,
 };
 
 async function getModel(id) {
+  return axios.get(types.url(endpoints.RELEASE + "/" + id), null, authHeader());
+}
+
+async function getDiscogsModel(discogsId) {
   return axios.get(
-    types.url(endpoints.RELEASE + "/test/" + id),
+    types.url(endpoints.RELEASE + "/test/" + discogsId),
     null,
     authHeader()
   );
@@ -83,6 +89,14 @@ async function renameFiles(releaseId) {
 async function tagFiles(releaseId) {
   return axios.get(
     types.url(endpoints.RELEASE + "/tagFiles/" + releaseId),
+    null,
+    authHeader()
+  );
+}
+
+async function getReleaseIdFromDiscogsId(discogsId) {
+  return axios.get(
+    types.url(endpoints.RELEASE + "/discogsToRelease/" + discogsId),
     null,
     authHeader()
   );

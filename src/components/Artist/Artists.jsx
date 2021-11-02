@@ -2,7 +2,7 @@ import { useState } from "react";
 
 import { Segment, Grid, Button, Icon } from "semantic-ui-react";
 
-const Artists = () => {
+const Artists = ({ toggleDiscogs }) => {
   const getArtists = () => {};
 
   return (

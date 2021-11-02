@@ -39,7 +39,11 @@ const TrackRow = ({ track }) => {
             ? track.extraArtists.map((artist, idx) => {
                 return (
                   <div key={idx} style={{ marginLeft: 20, fontSize: 12 }}>
-                    {artist.role} &mdash;{" "}
+                    {artist.role}{" "}
+                    {artist.description !== null
+                      ? "[" + artist.description + "]"
+                      : null}{" "}
+                    &mdash;{" "}
                     <Link to={"/artist/" + artist.artistId}>
                       {artist.anv !== null ? artist.anv : artist.name}
                     </Link>

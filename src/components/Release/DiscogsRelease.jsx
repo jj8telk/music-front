@@ -6,7 +6,7 @@ import releaseService from "../../services/release.service";
 
 import ReleaseView from "./ReleaseView";
 
-const Release = ({ toggleDiscogs }) => {
+const DiscogsRelease = ({ toggleDiscogs }) => {
   let history = useHistory();
 
   let { id } = useParams();
@@ -16,7 +16,7 @@ const Release = ({ toggleDiscogs }) => {
 
   useEffect(() => {
     runApi(
-      () => releaseService.getModel(id),
+      () => releaseService.getDiscogsModel(id),
       (data) => {
         setRelease(data);
       }
@@ -24,8 +24,13 @@ const Release = ({ toggleDiscogs }) => {
   }, [id]);
 
   useEffect(() => {
-    if (toggleDiscogs) {
-      history.push("/discogsRelease/" + release.discogsId);
+    if (!toggleDiscogs) {
+      runApi(
+        () => releaseService.getReleaseIdFromDiscogsId(id),
+        (data) => {
+          history.push("/release/" + data);
+        }
+      );
     }
   }, [toggleDiscogs]);
 
@@ -52,4 +57,4 @@ const Release = ({ toggleDiscogs }) => {
   );
 };
 
-export default Release;
+export default DiscogsRelease;

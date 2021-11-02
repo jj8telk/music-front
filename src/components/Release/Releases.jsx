@@ -18,7 +18,7 @@ import Paging from "../Data/Paging";
 import FormatDescription from "../widgets/FormatDescription";
 import Genre from "../widgets/Genre";
 
-const Releases = () => {
+const Releases = ({ toggleDiscogs }) => {
   const [tableData, setTableData] = useState(null);
   const [filter, setFilter] = useState({
     page: 1,
@@ -177,9 +177,15 @@ const Releases = () => {
                           />
                         </Table.Cell>
                         <Table.Cell>
-                          <Link to={"/release/" + release.discogsId}>
-                            {release.title}
-                          </Link>
+                          {toggleDiscogs ? (
+                            <Link to={"/discogsRelease/" + release.discogsId}>
+                              {release.title}
+                            </Link>
+                          ) : (
+                            <Link to={"/release/" + release.releaseId}>
+                              {release.title}
+                            </Link>
+                          )}
                         </Table.Cell>
                         <Table.Cell>
                           {release.formats !== null
