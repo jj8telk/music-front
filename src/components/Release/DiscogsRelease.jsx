@@ -28,7 +28,7 @@ const DiscogsRelease = ({ toggleDiscogs }) => {
       runApi(
         () => releaseService.getReleaseIdFromDiscogsId(id),
         (data) => {
-          history.push("/release/" + data);
+          if (data > 0) history.push("/release/" + data);
         }
       );
     }

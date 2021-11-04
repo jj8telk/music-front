@@ -212,6 +212,43 @@ const ReleaseView = ({
             </Grid.Column>
             <Grid.Column width={4}>
               <Header as='h4' dividing>
+                Writing
+              </Header>
+              <div style={{ overflow: "auto" }}>
+                {release.extraArtists !== null
+                  ? release.extraArtists
+                      .filter((x) => x.categoryName === "writing")
+                      .map((artist, idx) => {
+                        return (
+                          <div
+                            key={idx}
+                            style={{
+                              float: "left",
+                              minWidth: 200,
+                              padding: 5,
+                              border: "1px solid #ccc",
+                              margin: "0 5px 5px 0",
+                              fontSize: 13,
+                            }}
+                          >
+                            <strong>
+                              <Link to={"/artist/" + artist.artistId}>
+                                {artist.name}
+                              </Link>
+                              <br />
+                              {artist.role}{" "}
+                              {artist.description !== null ? (
+                                <span style={{ fontSize: 12 }}>
+                                  {" [" + artist.description + "]"}
+                                </span>
+                              ) : null}
+                            </strong>
+                          </div>
+                        );
+                      })
+                  : null}
+              </div>
+              <Header as='h4' dividing>
                 Production
               </Header>
               <div style={{ overflow: "auto" }}>
@@ -219,19 +256,8 @@ const ReleaseView = ({
                   ? release.extraArtists
                       .filter(
                         (x) =>
-                          x.role.indexOf("Compose") > -1 ||
-                          x.role.indexOf("Writer") > -1 ||
-                          x.role.indexOf("Written") > -1 ||
-                          x.role.indexOf("Produce") > -1 ||
-                          x.role.indexOf("Music") > -1 ||
-                          x.role.indexOf("Lyrics") > -1 ||
-                          x.role.indexOf("Words") > -1 ||
-                          x.role.indexOf("Mixed By") > -1 ||
-                          x.role.indexOf("Programmed") > -1 ||
-                          x.role.indexOf("Engineer") > -1 ||
-                          x.role.indexOf("Orchestrated") > -1 ||
-                          x.role.indexOf("Conduct") > -1 ||
-                          x.role.indexOf("Recorded By") > -1
+                          x.categoryName === "production" ||
+                          x.categoryName === "remix"
                       )
                       .map((artist, idx) => {
                         return (
@@ -243,6 +269,7 @@ const ReleaseView = ({
                               padding: 5,
                               border: "1px solid #ccc",
                               margin: "0 5px 5px 0",
+                              fontSize: 13,
                             }}
                           >
                             <strong>
@@ -251,9 +278,11 @@ const ReleaseView = ({
                               </Link>
                               <br />
                               {artist.role}{" "}
-                              {/* {artist.description !== null
-                                ? " [" + artist.description + "]"
-                                : null} */}
+                              {artist.description !== null ? (
+                                <span style={{ fontSize: 12 }}>
+                                  {" [" + artist.description + "]"}
+                                </span>
+                              ) : null}
                             </strong>
                           </div>
                         );
@@ -266,25 +295,7 @@ const ReleaseView = ({
               <div style={{ overflow: "auto" }}>
                 {release.extraArtists !== null
                   ? release.extraArtists
-                      .filter(
-                        (x) =>
-                          x.role.indexOf("Vocal") > -1 ||
-                          x.role.indexOf("Chorus") > -1 ||
-                          x.role.indexOf("Guitar") > -1 ||
-                          x.role.indexOf("Bass") > -1 ||
-                          x.role.indexOf("Piano") > -1 ||
-                          x.role.indexOf("Organ") > -1 ||
-                          x.role.indexOf("Keyboard") > -1 ||
-                          x.role.indexOf("Synth") > -1 ||
-                          x.role.indexOf("Drum") > -1 ||
-                          x.role.indexOf("Percussion") > -1 ||
-                          x.role.indexOf("Performer") > -1 ||
-                          x.role.indexOf("Instruments") > -1 ||
-                          x.role.indexOf("Voice") > -1 ||
-                          x.role.indexOf("Scratches") > -1 ||
-                          (x.role.indexOf("Orchestra") > -1 &&
-                            x.role.indexOf("Orchestrated") === -1)
-                      )
+                      .filter((x) => x.categoryName === "performance")
                       .map((artist, idx) => {
                         return (
                           <div
@@ -295,6 +306,7 @@ const ReleaseView = ({
                               padding: 5,
                               border: "1px solid #ccc",
                               margin: "0 5px 5px 0",
+                              fontSize: 13,
                             }}
                           >
                             <strong>
@@ -303,9 +315,11 @@ const ReleaseView = ({
                               </Link>
                               <br />
                               {artist.role}{" "}
-                              {/* {artist.description !== null
-                                ? " [" + artist.description + "]"
-                                : null} */}
+                              {artist.description !== null ? (
+                                <span style={{ fontSize: 12 }}>
+                                  {" [" + artist.description + "]"}
+                                </span>
+                              ) : null}
                             </strong>
                           </div>
                         );
@@ -313,43 +327,50 @@ const ReleaseView = ({
                   : null}
               </div>
               <Header as='h4' dividing>
-                Others Credits
+                Artwork
+              </Header>
+              <div style={{ overflow: "auto" }}>
+                {release.extraArtists !== null
+                  ? release.extraArtists
+                      .filter((x) => x.categoryName === "artwork")
+                      .map((artist, idx) => {
+                        return (
+                          <div
+                            key={idx}
+                            style={{
+                              float: "left",
+                              minWidth: 200,
+                              padding: 5,
+                              border: "1px solid #ccc",
+                              margin: "0 5px 5px 0",
+                              fontSize: 13,
+                            }}
+                          >
+                            <strong>
+                              <Link to={"/artist/" + artist.artistId}>
+                                {artist.name}
+                              </Link>
+                              <br />
+                              {artist.role}{" "}
+                              {artist.description !== null ? (
+                                <span style={{ fontSize: 12 }}>
+                                  {" [" + artist.description + "]"}
+                                </span>
+                              ) : null}
+                            </strong>
+                          </div>
+                        );
+                      })
+                  : null}
+              </div>
+              <Header as='h4' dividing>
+                Other Credits
               </Header>
               <div>
                 <List vertical>
                   {release.extraArtists !== null
                     ? release.extraArtists
-                        .filter(
-                          (x) =>
-                            x.role.indexOf("Compose") === -1 &&
-                            x.role.indexOf("Writer") === -1 &&
-                            x.role.indexOf("Written") === -1 &&
-                            x.role.indexOf("Produce") === -1 &&
-                            x.role.indexOf("Orchestrated") === -1 &&
-                            x.role.indexOf("Conduct") === -1 &&
-                            x.role.indexOf("Vocal") === -1 &&
-                            x.role.indexOf("Chorus") === -1 &&
-                            x.role.indexOf("Guitar") === -1 &&
-                            x.role.indexOf("Bass") === -1 &&
-                            x.role.indexOf("Piano") === -1 &&
-                            x.role.indexOf("Organ") === -1 &&
-                            x.role.indexOf("Keyboard") === -1 &&
-                            x.role.indexOf("Synth") === -1 &&
-                            x.role.indexOf("Drum") === -1 &&
-                            x.role.indexOf("Percussion") === -1 &&
-                            x.role.indexOf("Performer") === -1 &&
-                            x.role.indexOf("Orchestra") === -1 &&
-                            x.role.indexOf("Music") === -1 &&
-                            x.role.indexOf("Lyrics") === -1 &&
-                            x.role.indexOf("Words") === -1 &&
-                            x.role.indexOf("Mixed By") === -1 &&
-                            x.role.indexOf("Recorded By") === -1 &&
-                            x.role.indexOf("Engineer") === -1 &&
-                            x.role.indexOf("Instruments") === -1 &&
-                            x.role.indexOf("Programmed") === -1 &&
-                            x.role.indexOf("Scratches") === -1 &&
-                            x.role.indexOf("Voice") === -1
-                        )
+                        .filter((x) => x.categoryName === "other")
                         .map((artist, idx) => {
                           return (
                             <List.Item key={idx}>

@@ -35,23 +35,130 @@ const TrackRow = ({ track }) => {
       <Table.Cell verticalAlign='top'>
         <div style={track.parentId > 0 ? { marginLeft: 20 } : {}}>
           {track.title}
-          {track.extraArtists !== null
-            ? track.extraArtists.map((artist, idx) => {
-                return (
-                  <div key={idx} style={{ marginLeft: 20, fontSize: 12 }}>
-                    {artist.role}{" "}
-                    {artist.description !== null
-                      ? "[" + artist.description + "]"
-                      : null}{" "}
-                    &mdash;{" "}
-                    <Link to={"/artist/" + artist.artistId}>
-                      {artist.anv !== null ? artist.anv : artist.name}
-                    </Link>
-                    {artist.anv !== null ? "*" : null}
-                  </div>
-                );
-              })
-            : null}
+          {track.extraArtists !== null ? (
+            <>
+              {track.extraArtists
+                .filter((x) => x.categoryName === "remix")
+                .map((artist, idx) => {
+                  return (
+                    <div key={idx} style={{ marginLeft: 20, fontSize: 12 }}>
+                      <span
+                        style={{
+                          color: "red",
+                          fontWeight: "bold",
+                        }}
+                      >
+                        {artist.role}{" "}
+                        {artist.description !== null
+                          ? "[" + artist.description + "]"
+                          : null}{" "}
+                      </span>
+                      &mdash;{" "}
+                      <Link to={"/artist/" + artist.artistId}>
+                        {artist.anv !== null ? artist.anv : artist.name}
+                      </Link>
+                      {artist.anv !== null ? "*" : null}
+                    </div>
+                  );
+                })}
+              {track.extraArtists
+                .filter((x) => x.categoryName === "writing")
+                .map((artist, idx) => {
+                  return (
+                    <div key={idx} style={{ marginLeft: 20, fontSize: 12 }}>
+                      <span
+                        style={{
+                          color: "blue",
+                          fontWeight: "bold",
+                        }}
+                      >
+                        {artist.role}{" "}
+                        {artist.description !== null
+                          ? "[" + artist.description + "]"
+                          : null}{" "}
+                      </span>
+                      &mdash;{" "}
+                      <Link to={"/artist/" + artist.artistId}>
+                        {artist.anv !== null ? artist.anv : artist.name}
+                      </Link>
+                      {artist.anv !== null ? "*" : null}
+                    </div>
+                  );
+                })}
+              {track.extraArtists
+                .filter((x) => x.categoryName === "production")
+                .map((artist, idx) => {
+                  return (
+                    <div key={idx} style={{ marginLeft: 20, fontSize: 12 }}>
+                      <span
+                        style={{
+                          color: "green",
+                          fontWeight: "bold",
+                        }}
+                      >
+                        {artist.role}{" "}
+                        {artist.description !== null
+                          ? "[" + artist.description + "]"
+                          : null}{" "}
+                      </span>
+                      &mdash;{" "}
+                      <Link to={"/artist/" + artist.artistId}>
+                        {artist.anv !== null ? artist.anv : artist.name}
+                      </Link>
+                      {artist.anv !== null ? "*" : null}
+                    </div>
+                  );
+                })}
+              {track.extraArtists
+                .filter((x) => x.categoryName === "performance")
+                .map((artist, idx) => {
+                  return (
+                    <div key={idx} style={{ marginLeft: 20, fontSize: 12 }}>
+                      <span
+                        style={{
+                          color: "orange",
+                          fontWeight: "bold",
+                        }}
+                      >
+                        {artist.role}{" "}
+                        {artist.description !== null
+                          ? "[" + artist.description + "]"
+                          : null}{" "}
+                      </span>
+                      &mdash;{" "}
+                      <Link to={"/artist/" + artist.artistId}>
+                        {artist.anv !== null ? artist.anv : artist.name}
+                      </Link>
+                      {artist.anv !== null ? "*" : null}
+                    </div>
+                  );
+                })}
+              {track.extraArtists
+                .filter((x) => x.categoryName === "other")
+                .map((artist, idx) => {
+                  return (
+                    <div key={idx} style={{ marginLeft: 20, fontSize: 12 }}>
+                      <span
+                        style={{
+                          color: "black",
+                          fontWeight: "bold",
+                        }}
+                      >
+                        {artist.role}{" "}
+                        {artist.description !== null
+                          ? "[" + artist.description + "]"
+                          : null}{" "}
+                      </span>
+                      &mdash;{" "}
+                      <Link to={"/artist/" + artist.artistId}>
+                        {artist.anv !== null ? artist.anv : artist.name}
+                      </Link>
+                      {artist.anv !== null ? "*" : null}
+                    </div>
+                  );
+                })}
+            </>
+          ) : null}
         </div>
       </Table.Cell>
       <Table.Cell verticalAlign='top'>
