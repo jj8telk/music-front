@@ -16,28 +16,35 @@ const RenameFiles = ({ releaseId, onSave, onCancel }) => {
     <div>
       {fileList !== null ? (
         <>
-          <Table compact size='small'>
+          <Table compact size='small' style={{ fontSize: 12 }}>
             <Table.Header>
               <Table.Row>
-                <Table.HeaderCell>Current Path</Table.HeaderCell>
-                <Table.HeaderCell>Standardized Path</Table.HeaderCell>
+                <Table.HeaderCell>Path</Table.HeaderCell>
                 <Table.HeaderCell></Table.HeaderCell>
               </Table.Row>
             </Table.Header>
             <Table.Body>
               {fileList.map((file) => {
                 return (
-                  <Table.Row>
-                    <Table.Cell>{file.path}</Table.Cell>
-                    <Table.Cell>{file.standard}</Table.Cell>
-                    <Table.Cell>
-                      {file.path !== file.standard ? (
-                        <Icon name='exclamation circle' color='yellow' />
-                      ) : (
-                        <Icon name='check' color='green' />
-                      )}
-                    </Table.Cell>
-                  </Table.Row>
+                  <>
+                    <Table.Row>
+                      <Table.Cell>
+                        <strong>{file.path}</strong>
+                      </Table.Cell>
+                    </Table.Row>
+                    <Table.Row>
+                      <Table.Cell style={{ paddingLeft: 40 }}>
+                        {file.standard}
+                      </Table.Cell>
+                      <Table.Cell>
+                        {file.path !== file.standard ? (
+                          <Icon name='exclamation circle' color='yellow' />
+                        ) : (
+                          <Icon name='check' color='green' />
+                        )}
+                      </Table.Cell>
+                    </Table.Row>
+                  </>
                 );
               })}
             </Table.Body>

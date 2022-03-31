@@ -7,7 +7,6 @@ const FormatDescription = ({ description }) => {
     case "CDr":
     case "Vinyl":
     case "Cassette":
-    case "Remastered":
       color = "grey";
       break;
     case "Album":
@@ -35,17 +34,19 @@ const FormatDescription = ({ description }) => {
     case "DVD-Video":
       color = "grey";
       break;
+    case "Remastered":
     case "Reissue":
     case "Repress":
       color = "red";
-      break;
-
-      color = "lightblue";
       break;
     default:
       color = "lightgrey";
       break;
   }
+
+  if (description.includes("Reissue") > 0) color = "red";
+  if (description.includes("Remastered") > 0) color = "red";
+  if (description.includes("Repress") > 0) color = "red";
 
   return <Label color={color}>{description}</Label>;
 };

@@ -60,7 +60,11 @@ const TrackManager = ({
   const setTrackFile = (releaseTrackId, value) => {
     let r = release;
     let t = [...r.tracks];
-    t.filter((x) => x.releaseTrackId === releaseTrackId)[0].fileName = value;
+    var file = files.filter((x) => x.fileName === value);
+    t.filter((x) => x.releaseTrackId === releaseTrackId)[0].fileName =
+      file[0].fileName;
+    t.filter((x) => x.releaseTrackId === releaseTrackId)[0].fileSize =
+      file[0].fileSize;
     r.tracks = t;
     setRelease(r);
     initMatchFiles();
@@ -68,12 +72,14 @@ const TrackManager = ({
 
   const autoFindTracks = () => {
     let r = release;
-    let temp = r.tracks;
+    let temp = r.tracks.filter((x) => x.type === "track");
+    let i = 0;
     temp.forEach((track) => {
-      var file = files.filter((x) => x.fileName.indexOf(track.title) > 0);
-      if (file.length > 0) {
-        track.fileName = file[0].fileName;
-        track.fileSize = file[0].fileSize;
+      if (i + 1 <= files.length) {
+        var file = files[i];
+        track.fileName = file.fileName;
+        track.fileSize = file.fileSize;
+        i++;
       }
     });
     r.tracks = temp;
@@ -82,6 +88,7 @@ const TrackManager = ({
   };
 
   const onSaveMatchFiles = () => {
+    console.log(release.tracks);
     runApi(
       () =>
         releaseService.saveTracks(
@@ -142,7 +149,15 @@ const TrackManager = ({
           <Artist release={release} />
           <h3 style={{ marginTop: 5 }}>{release.title}</h3>
           <Icon name='folder' color='yellow' />
-          <span style={{ fontSize: 11 }}>{release.folder}</span>
+          <span
+            style={{
+              fontSize: 12,
+              fontFamily: "Courier New",
+              fontWeight: "bold",
+            }}
+          >
+            {release.folder}
+          </span>
         </Grid.Column>
       </Grid.Row>
       <Grid.Row>
@@ -229,7 +244,15 @@ const TrackManager = ({
                     ? release.tracks.map((track) => {
                         return (
                           <>
-                            <Table.Row key={track.releaseTrackId}>
+                            <Table.Row
+                              key={track.releaseTrackId}
+                              style={{
+                                backgroundColor:
+                                  track.type !== "track"
+                                    ? "rgb(230,230,230)"
+                                    : null,
+                              }}
+                            >
                               <Table.Cell>{track.position}</Table.Cell>
                               <Table.Cell>
                                 {track.artists !== null
@@ -255,10 +278,13 @@ const TrackManager = ({
                                       .substr(14, 5)
                                   : null}
                               </Table.Cell>
-                              {toggleMatchFiles ? (
+                              {toggleMatchFiles && track.type === "track" ? (
                                 <Table.Cell verticalAlign='top'>
                                   <Dropdown
-                                    style={{ backgroundColor: "yellow" }}
+                                    style={{
+                                      backgroundColor: "yellow",
+                                      fontFamily: "Courier New",
+                                    }}
                                     placeholder='...'
                                     options={
                                       files !== null
@@ -281,31 +307,41 @@ const TrackManager = ({
                                 </Table.Cell>
                               ) : null}
                             </Table.Row>
-                            <Table.Row>
-                              <Table.Cell colSpan='2'></Table.Cell>
-                              <Table.Cell>
-                                <span style={{ fontSize: 11 }}>
-                                  {track.fileName !== null ? (
-                                    <>
-                                      <Icon name='file outline' color='blue' />
-                                      {track.fileName}
-                                    </>
-                                  ) : (
-                                    <>
-                                      <Icon name='x' color='red' />
-                                      <em>file not found</em>
-                                    </>
-                                  )}
-                                </span>
-                              </Table.Cell>
-                              {track.fileName !== null ? (
+                            {track.type === "track" ? (
+                              <Table.Row>
+                                <Table.Cell colSpan='2'></Table.Cell>
                                 <Table.Cell>
-                                  <span style={{ fontSize: 11 }}>
-                                    {bytesToSize(track.fileSize)}
+                                  <span
+                                    style={{
+                                      fontSize: 11,
+                                      fontFamily: "Courier New",
+                                    }}
+                                  >
+                                    {track.fileName !== null ? (
+                                      <>
+                                        <Icon
+                                          name='file outline'
+                                          color='blue'
+                                        />
+                                        {track.fileName}
+                                      </>
+                                    ) : (
+                                      <>
+                                        <Icon name='x' color='red' />
+                                        <em>file not found</em>
+                                      </>
+                                    )}
                                   </span>
                                 </Table.Cell>
-                              ) : null}
-                            </Table.Row>
+                                {track.fileName !== null ? (
+                                  <Table.Cell>
+                                    <span style={{ fontSize: 11 }}>
+                                      {bytesToSize(track.fileSize)}
+                                    </span>
+                                  </Table.Cell>
+                                ) : null}
+                              </Table.Row>
+                            ) : null}
                           </>
                         );
                       })

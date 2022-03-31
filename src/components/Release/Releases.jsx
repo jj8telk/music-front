@@ -36,6 +36,30 @@ const Releases = ({ toggleDiscogs }) => {
     { key: 1, value: false, text: "No" },
   ];
 
+  const releaseTypeOptions = [
+    { key: 0, value: "Album", text: "Album" },
+    { key: 1, value: "EP", text: "EP" },
+    { key: 2, value: "Single", text: "Single" },
+    { key: 3, value: "Compilation", text: "Compilation" },
+    { key: 4, value: '12"', text: '12"' },
+    { key: 5, value: '10"', text: '10"' },
+    { key: 6, value: '7"', text: '7"' },
+  ];
+
+  const formatOptions = [
+    { key: 0, value: "CD", text: "CD" },
+    { key: 1, value: "Vinyl", text: "Vinyl" },
+    { key: 2, value: "Cassette", text: "Cassette" },
+    { key: 3, value: "CDr", text: "CDr" },
+    { key: 4, value: "File", text: "File" },
+  ];
+
+  const rippedOptions = [
+    { key: 0, value: "Ripped", text: "Ripped" },
+    { key: 1, value: "Partially", text: "Partially" },
+    { key: 2, value: "No", text: "No" },
+  ];
+
   useEffect(() => {
     runApi(artistService.getReleaseArtists, setArtistOptions);
   }, []);
@@ -79,8 +103,8 @@ const Releases = ({ toggleDiscogs }) => {
                         artistOptions !== null
                           ? artistOptions.map((artist) => {
                               return {
-                                key: artist.artistId,
-                                value: artist.artistId,
+                                key: artist.name,
+                                value: artist.name,
                                 text: artist.name,
                               };
                             })
@@ -91,7 +115,46 @@ const Releases = ({ toggleDiscogs }) => {
                       onChange={(event, data) =>
                         setFilter({
                           ...filter,
-                          artistId: data.value === "" ? null : data.value,
+                          albumArtistName:
+                            data.value === "" ? null : data.value,
+                        })
+                      }
+                    ></Dropdown>
+                  </Grid.Column>
+                  <Grid.Column width={2}>
+                    <h4>Release Type</h4>
+                    <Dropdown
+                      placeholder='Release Type'
+                      fluid
+                      search
+                      selection
+                      clearable
+                      options={releaseTypeOptions}
+                      disabled={releaseTypeOptions === null}
+                      loading={releaseTypeOptions === null}
+                      onChange={(event, data) =>
+                        setFilter({
+                          ...filter,
+                          releaseType: data.value === "" ? null : data.value,
+                        })
+                      }
+                    ></Dropdown>
+                  </Grid.Column>
+                  <Grid.Column width={2}>
+                    <h4>Format</h4>
+                    <Dropdown
+                      placeholder='Format'
+                      fluid
+                      search
+                      selection
+                      clearable
+                      options={formatOptions}
+                      disabled={formatOptions === null}
+                      loading={formatOptions === null}
+                      onChange={(event, data) =>
+                        setFilter({
+                          ...filter,
+                          format: data.value === "" ? null : data.value,
                         })
                       }
                     ></Dropdown>
@@ -115,6 +178,25 @@ const Releases = ({ toggleDiscogs }) => {
                       }
                     ></Dropdown>
                   </Grid.Column>
+                  <Grid.Column width={1}>
+                    <h4>Ripped?</h4>
+                    <Dropdown
+                      placeholder='Ripped?'
+                      fluid
+                      search
+                      selection
+                      clearable
+                      options={rippedOptions}
+                      disabled={rippedOptions === null}
+                      loading={rippedOptions === null}
+                      onChange={(event, data) =>
+                        setFilter({
+                          ...filter,
+                          ripped: data.value === "" ? null : data.value,
+                        })
+                      }
+                    ></Dropdown>
+                  </Grid.Column>
                 </Grid.Row>
                 <Grid.Row>
                   <Grid.Column width={2}>
@@ -134,7 +216,7 @@ const Releases = ({ toggleDiscogs }) => {
               <Table compact>
                 <Table.Header>
                   <Table.Row>
-                    <Table.HeaderCell colSpan='9'>
+                    <Table.HeaderCell colSpan='10'>
                       <Paging
                         pageNumbers={pageNumbers}
                         currentPage={currentPage}
@@ -144,14 +226,20 @@ const Releases = ({ toggleDiscogs }) => {
                     </Table.HeaderCell>
                   </Table.Row>
                   <Table.Row>
-                    <Table.HeaderCell></Table.HeaderCell>
+                    <Table.HeaderCell>
+                      <Icon name='music' />
+                    </Table.HeaderCell>
+                    <Table.HeaderCell>
+                      <Icon name='shopping bag' />
+                    </Table.HeaderCell>
                     <Table.HeaderCell>Album Artist</Table.HeaderCell>
                     <Table.HeaderCell></Table.HeaderCell>
                     <Table.HeaderCell>Release</Table.HeaderCell>
+                    <Table.HeaderCell>Release Date</Table.HeaderCell>
+                    <Table.HeaderCell>Country</Table.HeaderCell>
                     <Table.HeaderCell>Format</Table.HeaderCell>
                     <Table.HeaderCell></Table.HeaderCell>
-                    <Table.HeaderCell>Country</Table.HeaderCell>
-                    <Table.HeaderCell>Release Date</Table.HeaderCell>
+
                     <Table.HeaderCell>Genre</Table.HeaderCell>
                   </Table.Row>
                 </Table.Header>
@@ -159,6 +247,18 @@ const Releases = ({ toggleDiscogs }) => {
                   {tableData.data.map((release) => {
                     return (
                       <Table.Row>
+                        <Table.Cell>
+                          <Icon
+                            name='circle'
+                            color={
+                              release.totalTracks === release.rippedTracks
+                                ? "green"
+                                : release.rippedTracks > 0
+                                ? "yellow"
+                                : "grey"
+                            }
+                          />
+                        </Table.Cell>
                         <Table.Cell>
                           <Icon
                             name='circle'
@@ -187,6 +287,8 @@ const Releases = ({ toggleDiscogs }) => {
                             </Link>
                           )}
                         </Table.Cell>
+                        <Table.Cell>{release.releaseDateFormatted}</Table.Cell>
+                        <Table.Cell>{release.country}</Table.Cell>
                         <Table.Cell>
                           {release.formats !== null
                             ? release.formats.map((format) => {
@@ -209,8 +311,7 @@ const Releases = ({ toggleDiscogs }) => {
                               })
                             : null}
                         </Table.Cell>
-                        <Table.Cell>{release.country}</Table.Cell>
-                        <Table.Cell>{release.releaseDateFormatted}</Table.Cell>
+
                         <Table.Cell>
                           {release.genres !== null
                             ? release.genres.map((genre) => {

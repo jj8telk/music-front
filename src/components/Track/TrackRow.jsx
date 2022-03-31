@@ -14,6 +14,8 @@ const TrackRow = ({ track }) => {
           ? { fontWeight: "bold", backgroundColor: "#efefef" }
           : track.type === "track" && track.parentId > 0
           ? { backgroundColor: "rgb(245,245,245)" }
+          : track.type === "track" && track.fileId !== null
+          ? { backgroundColor: "rgb(230,255,255)" }
           : {}
       }
     >
