@@ -16,7 +16,11 @@ const RenameFiles = ({ releaseId, onSave, onCancel }) => {
     <div>
       {fileList !== null ? (
         <>
-          <Table compact size='small' style={{ fontSize: 12 }}>
+          <Table
+            compact
+            size='small'
+            style={{ fontSize: 12, fontFamily: "Courier New" }}
+          >
             <Table.Header>
               <Table.Row>
                 <Table.HeaderCell>Path</Table.HeaderCell>
@@ -28,13 +32,12 @@ const RenameFiles = ({ releaseId, onSave, onCancel }) => {
                 return (
                   <>
                     <Table.Row>
-                      <Table.Cell>
-                        <strong>{file.path}</strong>
-                      </Table.Cell>
+                      <Table.Cell>{file.path}</Table.Cell>
                     </Table.Row>
                     <Table.Row>
-                      <Table.Cell style={{ paddingLeft: 40 }}>
-                        {file.standard}
+                      <Table.Cell>
+                        <Icon name='arrow right'></Icon>
+                        <strong>{file.standard}</strong>
                       </Table.Cell>
                       <Table.Cell>
                         {file.path !== file.standard ? (
