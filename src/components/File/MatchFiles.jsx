@@ -30,6 +30,7 @@ const MatchFiles = ({ release, onSave }) => {
       if (file.length > 0) {
         track.fileName = file[0].fileName;
         track.fileSize = file[0].fileSize;
+        track.duration = file[0].duration;
       }
     });
 
