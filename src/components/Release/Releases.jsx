@@ -8,6 +8,8 @@ import {
   Icon,
   Table,
   Dropdown,
+  Label,
+  LabelDetail,
 } from "semantic-ui-react";
 
 import { runApi } from "../../services/services";
@@ -60,8 +62,16 @@ const Releases = ({ toggleDiscogs }) => {
     { key: 2, value: "No", text: "No" },
   ];
 
+  const folderOptions = [
+    { key: 0, value: "4500023", text: "Main" },
+    { key: 1, value: "4499918", text: "Classical" },
+    { key: 2, value: "4361528", text: "Others" },
+  ];
+
   useEffect(() => {
-    runApi(artistService.getReleaseArtists, setArtistOptions);
+    runApi(artistService.getReleaseArtists, (data) => {
+      setArtistOptions(data);
+    });
   }, []);
 
   useEffect(() => {
@@ -99,17 +109,7 @@ const Releases = ({ toggleDiscogs }) => {
                       search
                       selection
                       clearable
-                      options={
-                        artistOptions !== null
-                          ? artistOptions.map((artist) => {
-                              return {
-                                key: artist.name,
-                                value: artist.name,
-                                text: artist.name,
-                              };
-                            })
-                          : null
-                      }
+                      options={artistOptions}
                       disabled={artistOptions === null}
                       loading={artistOptions === null}
                       onChange={(event, data) =>
@@ -197,10 +197,40 @@ const Releases = ({ toggleDiscogs }) => {
                       }
                     ></Dropdown>
                   </Grid.Column>
+                  <Grid.Column width={1}>
+                    <h4>Folder</h4>
+                    <Dropdown
+                      placeholder='Folder'
+                      fluid
+                      search
+                      selection
+                      clearable
+                      options={folderOptions}
+                      disabled={folderOptions === null}
+                      loading={folderOptions === null}
+                      onChange={(event, data) =>
+                        setFilter({
+                          ...filter,
+                          discogsFolderId:
+                            data.value === "" ? null : data.value,
+                        })
+                      }
+                    ></Dropdown>
+                  </Grid.Column>
                 </Grid.Row>
                 <Grid.Row>
                   <Grid.Column width={2}>
-                    <Button color='blue' size='mini' onClick={getReleases}>
+                    <Button
+                      color='blue'
+                      size='mini'
+                      onClick={() => {
+                        setCurrentPage(1);
+                        let f = { ...filter };
+                        f.page = 1;
+                        setFilter(f);
+                        getReleases();
+                      }}
+                    >
                       <Icon name='search'></Icon>
                       Search
                     </Button>
@@ -216,7 +246,7 @@ const Releases = ({ toggleDiscogs }) => {
               <Table compact>
                 <Table.Header>
                   <Table.Row>
-                    <Table.HeaderCell colSpan='10'>
+                    <Table.HeaderCell colSpan='11'>
                       <Paging
                         pageNumbers={pageNumbers}
                         currentPage={currentPage}
@@ -225,47 +255,54 @@ const Releases = ({ toggleDiscogs }) => {
                       />
                     </Table.HeaderCell>
                   </Table.Row>
-                  <Table.Row>
-                    <Table.HeaderCell>
-                      <Icon name='music' />
-                    </Table.HeaderCell>
-                    <Table.HeaderCell>
-                      <Icon name='shopping bag' />
-                    </Table.HeaderCell>
-                    <Table.HeaderCell>Album Artist</Table.HeaderCell>
+                  {/* <Table.Row>
                     <Table.HeaderCell></Table.HeaderCell>
-                    <Table.HeaderCell>Release</Table.HeaderCell>
-                    <Table.HeaderCell>Release Date</Table.HeaderCell>
-                    <Table.HeaderCell>Country</Table.HeaderCell>
-                    <Table.HeaderCell>Format</Table.HeaderCell>
                     <Table.HeaderCell></Table.HeaderCell>
-
-                    <Table.HeaderCell>Genre</Table.HeaderCell>
-                  </Table.Row>
+                    <Table.HeaderCell></Table.HeaderCell>
+                    <Table.HeaderCell></Table.HeaderCell>
+                    <Table.HeaderCell></Table.HeaderCell>
+                    <Table.HeaderCell></Table.HeaderCell>
+                    <Table.HeaderCell></Table.HeaderCell>
+                    <Table.HeaderCell></Table.HeaderCell>
+                    <Table.HeaderCell></Table.HeaderCell>
+                  </Table.Row> */}
                 </Table.Header>
                 <Table.Body>
                   {tableData.data.map((release) => {
                     return (
-                      <Table.Row>
-                        <Table.Cell>
-                          <Icon
-                            name='circle'
-                            color={
-                              release.totalTracks === release.rippedTracks
-                                ? "green"
-                                : release.rippedTracks > 0
-                                ? "yellow"
-                                : "grey"
-                            }
-                          />
+                      <Table.Row
+                        key={release.id}
+                        style={{
+                          backgroundColor: !release.own
+                            ? "rgb(240,240,240)"
+                            : release.totalTracks === release.rippedTracks
+                            ? ""
+                            : "",
+                        }}
+                      >
+                        <Table.Cell
+                          style={{
+                            borderLeft: release.own
+                              ? release.totalTracks === release.rippedTracks
+                                ? "10px solid rgb(100,210,100)"
+                                : "10px solid rgb(210,100,100)"
+                              : "10px solid rgb(240,240,240)",
+                          }}
+                        >
+                          {/* {release.own ? (
+                            <Icon
+                              name='circle'
+                              size='small'
+                              color={
+                                release.totalTracks === release.rippedTracks
+                                  ? "green"
+                                  : release.rippedTracks > 0
+                                  ? "yellow"
+                                  : "red"
+                              }
+                            />
+                          ) : null} */}
                         </Table.Cell>
-                        <Table.Cell>
-                          <Icon
-                            name='circle'
-                            color={release.own ? "green" : "red"}
-                          />
-                        </Table.Cell>
-                        <Table.Cell>{release.albumArtist}</Table.Cell>
                         <Table.Cell>
                           <img
                             src={
@@ -273,22 +310,39 @@ const Releases = ({ toggleDiscogs }) => {
                               "Release/formatIcon/" +
                               release.formatString
                             }
-                            style={{ height: 20 }}
+                            style={{ height: 40, marginRight: 7 }}
                           />
                         </Table.Cell>
                         <Table.Cell>
-                          {toggleDiscogs ? (
-                            <Link to={"/discogsRelease/" + release.discogsId}>
-                              {release.title}
-                            </Link>
-                          ) : (
-                            <Link to={"/release/" + release.releaseId}>
-                              {release.title}
-                            </Link>
-                          )}
+                          {release.images !== null ? (
+                            release.images.length > 0 ? (
+                              <img
+                                src={release.images[0].uri}
+                                style={{ height: 50 }}
+                                alt='artwork'
+                              />
+                            ) : null
+                          ) : null}
                         </Table.Cell>
-                        <Table.Cell>{release.releaseDateFormatted}</Table.Cell>
-                        <Table.Cell>{release.country}</Table.Cell>
+                        <Table.Cell>
+                          <Link to={"/artist/" + release.albumArtist}>
+                            <span style={{ fontSize: 16, fontWeight: "bold" }}>
+                              {release.albumArtist}
+                            </span>
+                          </Link>
+                          <br />
+                          <span style={{ fontSize: 14 }}>
+                            {toggleDiscogs ? (
+                              <Link to={"/discogsRelease/" + release.discogsId}>
+                                {release.title}
+                              </Link>
+                            ) : (
+                              <Link to={"/release/" + release.releaseId}>
+                                {release.title}
+                              </Link>
+                            )}
+                          </span>
+                        </Table.Cell>
                         <Table.Cell>
                           {release.formats !== null
                             ? release.formats.map((format) => {
@@ -301,6 +355,13 @@ const Releases = ({ toggleDiscogs }) => {
                             : null}
                         </Table.Cell>
                         <Table.Cell>
+                          <span style={{ fontSize: 16, marginRight: 10 }}>
+                            {release.releaseDateFormatted}
+                          </span>
+                          &nbsp;
+                          {release.country}
+                        </Table.Cell>
+                        <Table.Cell>
                           {release.formatDescriptions !== null
                             ? release.formatDescriptions.map((description) => {
                                 return (
@@ -311,7 +372,26 @@ const Releases = ({ toggleDiscogs }) => {
                               })
                             : null}
                         </Table.Cell>
-
+                        <Table.Cell>
+                          {release.labels !== null
+                            ? release.labels.map((label) => {
+                                return (
+                                  <Label
+                                    basic
+                                    size={
+                                      release.labels.length > 1
+                                        ? "medium"
+                                        : "large"
+                                    }
+                                    style={{ borderRadius: 0 }}
+                                  >
+                                    {label.entity}
+                                    <LabelDetail>{label.catNo}</LabelDetail>
+                                  </Label>
+                                );
+                              })
+                            : null}
+                        </Table.Cell>
                         <Table.Cell>
                           {release.genres !== null
                             ? release.genres.map((genre) => {
@@ -324,7 +404,135 @@ const Releases = ({ toggleDiscogs }) => {
                   })}
                 </Table.Body>
               </Table>
-            ) : null}
+            ) : // <Table compact>
+            //   <Table.Header>
+            //     <Table.Row>
+            //       <Table.HeaderCell colSpan='11'>
+            //         <Paging
+            //           pageNumbers={pageNumbers}
+            //           currentPage={currentPage}
+            //           setPage={setPage}
+            //           setCurrentPage={setCurrentPage}
+            //         />
+            //       </Table.HeaderCell>
+            //     </Table.Row>
+            //     <Table.Row>
+            //       <Table.HeaderCell>
+            //         <Icon name='music' />
+            //       </Table.HeaderCell>
+            //       <Table.HeaderCell>
+            //         <Icon name='shopping bag' />
+            //       </Table.HeaderCell>
+            //       <Table.HeaderCell>Album Artist</Table.HeaderCell>
+            //       <Table.HeaderCell></Table.HeaderCell>
+            //       <Table.HeaderCell>Release</Table.HeaderCell>
+            //       <Table.HeaderCell>Release Date</Table.HeaderCell>
+            //       <Table.HeaderCell>Country</Table.HeaderCell>
+            //       <Table.HeaderCell>Format</Table.HeaderCell>
+            //       <Table.HeaderCell></Table.HeaderCell>
+            //       <Table.HeaderCell>Label</Table.HeaderCell>
+            //       <Table.HeaderCell>Genre</Table.HeaderCell>
+            //     </Table.Row>
+            //   </Table.Header>
+            //   <Table.Body>
+            //     {tableData.data.map((release) => {
+            //       return (
+            //         <Table.Row key={release.id}>
+            //           <Table.Cell>
+            //             <Icon
+            //               name='circle'
+            //               color={
+            //                 release.totalTracks === release.rippedTracks
+            //                   ? "green"
+            //                   : release.rippedTracks > 0
+            //                   ? "yellow"
+            //                   : "grey"
+            //               }
+            //             />
+            //           </Table.Cell>
+            //           <Table.Cell>
+            //             <Icon
+            //               name='circle'
+            //               color={release.own ? "green" : "red"}
+            //             />
+            //           </Table.Cell>
+            //           <Table.Cell>
+            //             <Link to={"/artist/" + release.albumArtist}>
+            //               {release.albumArtist}
+            //             </Link>
+            //           </Table.Cell>
+            //           <Table.Cell>
+            //             <img
+            //               src={
+            //                 process.env.REACT_APP_CORE_API +
+            //                 "Release/formatIcon/" +
+            //                 release.formatString
+            //               }
+            //               style={{ height: 20 }}
+            //             />
+            //           </Table.Cell>
+            //           <Table.Cell>
+            //             {toggleDiscogs ? (
+            //               <Link to={"/discogsRelease/" + release.discogsId}>
+            //                 {release.title}
+            //               </Link>
+            //             ) : (
+            //               <Link to={"/release/" + release.releaseId}>
+            //                 {release.title}
+            //               </Link>
+            //             )}
+            //           </Table.Cell>
+            //           <Table.Cell>{release.releaseDateFormatted}</Table.Cell>
+            //           <Table.Cell>{release.country}</Table.Cell>
+            //           <Table.Cell>
+            //             {release.formats !== null
+            //               ? release.formats.map((format) => {
+            //                   return (
+            //                     <FormatDescription
+            //                       description={format.description}
+            //                     />
+            //                   );
+            //                 })
+            //               : null}
+            //           </Table.Cell>
+            //           <Table.Cell>
+            //             {release.formatDescriptions !== null
+            //               ? release.formatDescriptions.map((description) => {
+            //                   return (
+            //                     <FormatDescription
+            //                       description={description.description}
+            //                     />
+            //                   );
+            //                 })
+            //               : null}
+            //           </Table.Cell>
+            //           <Table.Cell>
+            //             {release.labels !== null
+            //               ? release.labels.map((label) => {
+            //                   return (
+            //                     <Label basic>
+            //                       {label.entity}
+            //                       <LabelDetail color='blue'>
+            //                         {label.catNo}
+            //                       </LabelDetail>
+            //                     </Label>
+            //                   );
+            //                 })
+            //               : null}
+            //           </Table.Cell>
+            //           <Table.Cell>
+            //             {release.genres !== null
+            //               ? release.genres.map((genre) => {
+            //                   return <Genre genre={genre.name} />;
+            //                 })
+            //               : null}
+            //           </Table.Cell>
+            //         </Table.Row>
+            //       );
+            //     })}
+            //   </Table.Body>
+            // </Table>
+            null}
           </Grid.Column>
         </Grid.Row>
       </Grid>

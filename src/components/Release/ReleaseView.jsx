@@ -166,6 +166,20 @@ const ReleaseView = ({
                     })
                   : null}
               </div>
+              <div
+                style={{ marginTop: 10, marginBottom: 15, textAlign: "right" }}
+              >
+                <Label basic color={release.own === true ? "green" : "red"}>
+                  {release.own !== true ? (
+                    "Want"
+                  ) : (
+                    <>
+                      <Icon name='folder'></Icon>
+                      {release.discogsFolder}
+                    </>
+                  )}
+                </Label>
+              </div>
             </Grid.Column>
           </Grid.Row>
           <Grid.Row>

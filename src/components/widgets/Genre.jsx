@@ -10,9 +10,11 @@ const Genre = ({ genre, size = "medium" }) => {
       color = "yellow";
       break;
     case "Jazz":
+    case "Blues":
       color = "teal";
       break;
     case "Rock":
+    case "Funk / Soul":
       color = "blue";
       break;
     case "Folk, World, & Country":

@@ -5,11 +5,20 @@ import { authHeader } from "./helpers/auth-header";
 
 const artistService = {
   getReleaseArtists,
+  getModel,
 };
 
 async function getReleaseArtists() {
   return axios.get(
     types.url(endpoints.ARTIST + "/releaseArtists"),
+    null,
+    authHeader()
+  );
+}
+
+async function getModel(name) {
+  return axios.get(
+    types.url(endpoints.ARTIST + "/getModel/" + name),
     null,
     authHeader()
   );

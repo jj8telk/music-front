@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import Layout from "./components/Layout/Layout";
 
 import Artists from "./components/Artist/Artists";
+import Artist from "./components/Artist/Artist";
 import Release from "./components/Release/Release";
 import DiscogsRelease from "./components/Release/DiscogsRelease";
 import Releases from "./components/Release/Releases";
@@ -21,6 +22,11 @@ function App() {
             exact
             path='/artists'
             children={<Artists toggleDiscogs={toggleDiscogs} />}
+          ></Route>
+          <Route
+            exact
+            path='/artist/:name'
+            children={<Artist toggleDiscogs={toggleDiscogs} />}
           ></Route>
           <Route
             exact

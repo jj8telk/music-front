@@ -2,15 +2,17 @@ import { Link } from "react-router-dom";
 
 const Artist = ({ release }) => {
   return (
-    <span
-      style={{
-        marginRight: 15,
-        fontSize: 24,
-        fontWeight: "bold",
-      }}
-    >
-      {release.albumArtist}
-    </span>
+    <Link to={"/artist/" + release.albumArtist}>
+      <span
+        style={{
+          marginRight: 15,
+          fontSize: 24,
+          fontWeight: "bold",
+        }}
+      >
+        {release.albumArtist}
+      </span>
+    </Link>
   );
   // return release !== null ? (
   //   release.artists.map((artist) => {
