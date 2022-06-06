@@ -1,7 +1,27 @@
 import { Link } from "react-router-dom";
 import { Table, Icon } from "semantic-ui-react";
 
-const TrackRow = ({ track }) => {
+import { runApi } from "../../services/services";
+import releaseService from "../../services/release.service";
+
+const TrackRow = ({
+  track,
+  addToPlaylist,
+  setCurrentTrack,
+  currentTrack,
+  setPlayState,
+  playState,
+}) => {
+  const setTrack = () => {
+    runApi(
+      () => releaseService.getReleaseTrack(track.releaseTrackId),
+      (data) => {
+        setCurrentTrack(data);
+        //setPlayState("play");
+      }
+    );
+  };
+
   return (
     <Table.Row
       style={
@@ -14,11 +34,37 @@ const TrackRow = ({ track }) => {
           ? { fontWeight: "bold", backgroundColor: "#efefef" }
           : track.type === "track" && track.parentId > 0
           ? { backgroundColor: "rgb(245,245,245)" }
+          : currentTrack !== null &&
+            track.releaseTrackId !== null &&
+            track.releaseTrackId === currentTrack.releaseTrackId
+          ? { backgroundColor: "rgb(255,230,255)" }
           : track.type === "track" && track.fileId !== null
           ? { backgroundColor: "rgb(230,255,255)" }
           : {}
       }
     >
+      <Table.Cell verticalAlign='top'>
+        {track.type == "track" ? (
+          track.fileId !== null ? (
+            <>
+              {currentTrack !== null &&
+              track.releaseTrackId === currentTrack.releaseTrackId ? null : (
+                <Icon
+                  name='play'
+                  color='green'
+                  style={{ marginRight: 10 }}
+                  onClick={setTrack}
+                />
+              )}
+              {!track.fileNamed ? (
+                <Icon name='exclamation circle' color='yellow' />
+              ) : null}
+            </>
+          ) : (
+            <Icon name='x' color='red' />
+          )
+        ) : null}
+      </Table.Cell>
       <Table.Cell verticalAlign='top'>{track.position}</Table.Cell>
       <Table.Cell verticalAlign='top'>
         {track.artists !== null
@@ -167,20 +213,6 @@ const TrackRow = ({ track }) => {
         {track.type === "track"
           ? new Date(track.duration * 1000).toISOString().substr(14, 5)
           : null}
-      </Table.Cell>
-      <Table.Cell verticalAlign='top'>
-        {track.type == "track" ? (
-          track.fileId !== null ? (
-            <>
-              <Icon name='check' color='green' style={{ marginRight: 10 }} />
-              {!track.fileNamed ? (
-                <Icon name='exclamation circle' color='yellow' />
-              ) : null}
-            </>
-          ) : (
-            <Icon name='x' color='red' />
-          )
-        ) : null}
       </Table.Cell>
     </Table.Row>
   );

@@ -7,6 +7,7 @@ import { runApi } from "../../services/services";
 import artistService from "../../services/artist.service";
 
 import ReleaseTable from "../Release/ReleaseTable";
+import ReleaseBlock from "../Release/ReleaseBlock";
 
 const Artist = ({ toggleDiscogs }) => {
   let { name } = useParams();
@@ -28,43 +29,43 @@ const Artist = ({ toggleDiscogs }) => {
           <h1>{artist.name}</h1>
           {artist.releases !== null ? (
             <>
-              <div style={{ marginBottom: 20 }}>
+              <div style={{ marginBottom: 20, clear: "left" }}>
                 <h3>Albums</h3>
-                <ReleaseTable
+                <ReleaseBlock
                   releases={artist.releases.filter(
-                    (x) => x.releaseType === "Album"
+                    (x) => x.releaseType === "Album" && x.own
                   )}
                 />
               </div>
-              <div style={{ marginBottom: 20 }}>
+              <div style={{ marginBottom: 20, clear: "left" }}>
                 <h3>EPs</h3>
-                <ReleaseTable
+                <ReleaseBlock
                   releases={artist.releases.filter(
-                    (x) => x.releaseType === "EP"
+                    (x) => x.releaseType === "EP" && x.own
                   )}
                 />
               </div>
-              <div style={{ marginBottom: 20 }}>
+              <div style={{ marginBottom: 20, clear: "left" }}>
                 <h3>Singles</h3>
-                <ReleaseTable
+                <ReleaseBlock
                   releases={artist.releases.filter(
-                    (x) => x.releaseType === "Single"
+                    (x) => x.releaseType === "Single" && x.own
                   )}
                 />
               </div>
-              <div style={{ marginBottom: 20 }}>
+              <div style={{ marginBottom: 20, clear: "left" }}>
                 <h3>Compilations</h3>
-                <ReleaseTable
+                <ReleaseBlock
                   releases={artist.releases.filter(
-                    (x) => x.releaseType === "Compilation"
+                    (x) => x.releaseType === "Compilation" && x.own
                   )}
                 />
               </div>
-              <div style={{ marginBottom: 20 }}>
+              <div style={{ marginBottom: 20, clear: "left" }}>
                 <h3>Other</h3>
-                <ReleaseTable
+                <ReleaseBlock
                   releases={artist.releases.filter(
-                    (x) => x.releaseType === "Unknown"
+                    (x) => x.releaseType === "Unknown" && x.own
                   )}
                 />
               </div>

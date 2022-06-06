@@ -6,7 +6,14 @@ import releaseService from "../../services/release.service";
 
 import ReleaseView from "./ReleaseView";
 
-const Release = ({ toggleDiscogs }) => {
+const Release = ({
+  toggleDiscogs,
+  addToPlaylist,
+  setCurrentTrack,
+  currentTrack,
+  setPlayState,
+  playState,
+}) => {
   let history = useHistory();
 
   let { id } = useParams();
@@ -48,6 +55,11 @@ const Release = ({ toggleDiscogs }) => {
       showTrackManagement={showTrackManagement}
       setShowTrackManagement={setShowTrackManagement}
       saveFolder={saveFolder}
+      addToPlaylist={addToPlaylist}
+      setCurrentTrack={setCurrentTrack}
+      currentTrack={currentTrack}
+      setPlayState={setPlayState}
+      playState={playState}
     />
   );
 };

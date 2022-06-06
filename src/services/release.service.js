@@ -15,6 +15,8 @@ const releaseService = {
   renameFiles,
   tagFiles,
   getReleaseIdFromDiscogsId,
+  getLabels,
+  getReleaseTrack,
 };
 
 async function getModel(id) {
@@ -97,6 +99,22 @@ async function tagFiles(releaseId) {
 async function getReleaseIdFromDiscogsId(discogsId) {
   return axios.get(
     types.url(endpoints.RELEASE + "/discogsToRelease/" + discogsId),
+    null,
+    authHeader()
+  );
+}
+
+async function getLabels() {
+  return axios.get(
+    types.url(endpoints.RELEASE + "/labels"),
+    null,
+    authHeader()
+  );
+}
+
+async function getReleaseTrack(releaseTrackId) {
+  return axios.get(
+    types.url(endpoints.RELEASE + "/releaseTrack/" + releaseTrackId),
     null,
     authHeader()
   );

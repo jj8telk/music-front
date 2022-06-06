@@ -32,6 +32,7 @@ const Releases = ({ toggleDiscogs }) => {
 
   // Filters
   const [artistOptions, setArtistOptions] = useState(null);
+  const [labelOptions, setLabelOptions] = useState(null);
 
   const boolOptions = [
     { key: 0, value: true, text: "Yes" },
@@ -66,11 +67,19 @@ const Releases = ({ toggleDiscogs }) => {
     { key: 0, value: "4500023", text: "Main" },
     { key: 1, value: "4499918", text: "Classical" },
     { key: 2, value: "4361528", text: "Others" },
+    { key: 3, value: "4551116", text: "Comedy"}
   ];
 
   useEffect(() => {
     runApi(artistService.getReleaseArtists, (data) => {
       setArtistOptions(data);
+    });
+    runApi(releaseService.getLabels, (data) => {
+      setLabelOptions(
+        data.map((d) => {
+          return { key: d.entityId, value: d.entityId, text: d.name };
+        })
+      );
     });
   }, []);
 
@@ -91,6 +100,17 @@ const Releases = ({ toggleDiscogs }) => {
     setFilter({ ...filter, page: pageNumber });
     setCurrentPage(pageNumber);
   };
+
+  function containsObject(obj, list) {
+    var i;
+    for (i = 0; i < list.length; i++) {
+      if (list[i] === obj) {
+        return true;
+      }
+    }
+
+    return false;
+  }
 
   return (
     <>
@@ -155,6 +175,25 @@ const Releases = ({ toggleDiscogs }) => {
                         setFilter({
                           ...filter,
                           format: data.value === "" ? null : data.value,
+                        })
+                      }
+                    ></Dropdown>
+                  </Grid.Column>
+                  <Grid.Column width={2}>
+                    <h4>Label</h4>
+                    <Dropdown
+                      placeholder='Label'
+                      fluid
+                      search
+                      selection
+                      clearable
+                      options={labelOptions}
+                      disabled={labelOptions === null}
+                      loading={labelOptions === null}
+                      onChange={(event, data) =>
+                        setFilter({
+                          ...filter,
+                          labelId: data.value === "" ? null : data.value,
                         })
                       }
                     ></Dropdown>
@@ -314,6 +353,33 @@ const Releases = ({ toggleDiscogs }) => {
                           />
                         </Table.Cell>
                         <Table.Cell>
+                          <Icon
+                            name='square'
+                            color={
+                              release.releaseType === "Album"
+                                ? "purple"
+                                : release.releaseType === "EP"
+                                ? "teal"
+                                : release.releaseType === "Single"
+                                ? "blue"
+                                : release.releaseType === "Compilation"
+                                ? "yellow"
+                                : "black"
+                            }
+                            alt={
+                              release.releaseType === "Album"
+                                ? "purple"
+                                : release.releaseType === "EP"
+                                ? "teal"
+                                : release.releaseType === "Single"
+                                ? "blue"
+                                : release.releaseType === "Compilation"
+                                ? "yellow"
+                                : "black"
+                            }
+                          />
+                        </Table.Cell>
+                        <Table.Cell>
                           {release.images !== null ? (
                             release.images.length > 0 ? (
                               <img
@@ -331,7 +397,7 @@ const Releases = ({ toggleDiscogs }) => {
                             </span>
                           </Link>
                           <br />
-                          <span style={{ fontSize: 14 }}>
+                          <span style={{ fontSize: 15 }}>
                             {toggleDiscogs ? (
                               <Link to={"/discogsRelease/" + release.discogsId}>
                                 {release.title}
@@ -343,7 +409,8 @@ const Releases = ({ toggleDiscogs }) => {
                             )}
                           </span>
                         </Table.Cell>
-                        <Table.Cell>
+
+                        {/* <Table.Cell>
                           {release.formats !== null
                             ? release.formats.map((format) => {
                                 return (
@@ -353,7 +420,7 @@ const Releases = ({ toggleDiscogs }) => {
                                 );
                               })
                             : null}
-                        </Table.Cell>
+                        </Table.Cell> */}
                         <Table.Cell>
                           <span style={{ fontSize: 16, marginRight: 10 }}>
                             {release.releaseDateFormatted}

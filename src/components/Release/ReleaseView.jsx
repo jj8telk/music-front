@@ -24,6 +24,11 @@ const ReleaseView = ({
   showTrackManagement,
   setShowTrackManagement,
   saveFolder,
+  addToPlaylist,
+  setCurrentTrack,
+  currentTrack,
+  setPlayState,
+  playState,
 }) => {
   return (
     <Grid columns={16}>
@@ -218,7 +223,15 @@ const ReleaseView = ({
                 <Table.Body>
                   {release.tracks.map((track) => {
                     return (
-                      <TrackRow key={track.releaseTrackId} track={track} />
+                      <TrackRow
+                        key={track.releaseTrackId}
+                        track={track}
+                        addToPlaylist={addToPlaylist}
+                        setCurrentTrack={setCurrentTrack}
+                        currentTrack={currentTrack}
+                        setPlayState={setPlayState}
+                        playState={playState}
+                      />
                     );
                   })}
                 </Table.Body>
