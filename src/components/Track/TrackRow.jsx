@@ -4,24 +4,7 @@ import { Table, Icon } from "semantic-ui-react";
 import { runApi } from "../../services/services";
 import releaseService from "../../services/release.service";
 
-const TrackRow = ({
-  track,
-  addToPlaylist,
-  setCurrentTrack,
-  currentTrack,
-  setPlayState,
-  playState,
-}) => {
-  const setTrack = () => {
-    runApi(
-      () => releaseService.getReleaseTrack(track.releaseTrackId),
-      (data) => {
-        setCurrentTrack(data);
-        //setPlayState("play");
-      }
-    );
-  };
-
+const TrackRow = ({ track }) => {
   return (
     <Table.Row
       style={
@@ -34,10 +17,6 @@ const TrackRow = ({
           ? { fontWeight: "bold", backgroundColor: "#efefef" }
           : track.type === "track" && track.parentId > 0
           ? { backgroundColor: "rgb(245,245,245)" }
-          : currentTrack !== null &&
-            track.releaseTrackId !== null &&
-            track.releaseTrackId === currentTrack.releaseTrackId
-          ? { backgroundColor: "rgb(255,230,255)" }
           : track.type === "track" && track.fileId !== null
           ? { backgroundColor: "rgb(230,255,255)" }
           : {}
@@ -47,15 +26,7 @@ const TrackRow = ({
         {track.type == "track" ? (
           track.fileId !== null ? (
             <>
-              {currentTrack !== null &&
-              track.releaseTrackId === currentTrack.releaseTrackId ? null : (
-                <Icon
-                  name='play'
-                  color='green'
-                  style={{ marginRight: 10 }}
-                  onClick={setTrack}
-                />
-              )}
+              <Icon name='play' color='green' style={{ marginRight: 10 }} />
               {!track.fileNamed ? (
                 <Icon name='exclamation circle' color='yellow' />
               ) : null}
