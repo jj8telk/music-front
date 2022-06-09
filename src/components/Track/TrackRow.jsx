@@ -1,33 +1,54 @@
+import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 import { Table, Icon } from "semantic-ui-react";
 
-import { runApi } from "../../services/services";
-import releaseService from "../../services/release.service";
+const mapStateToProps = (state) => ({
+  currentTrack: state.audio.currentTrack,
+  isPlaying: state.audio.isPlaying,
+});
 
-const TrackRow = ({ track }) => {
+function TrackRow(props) {
   return (
     <Table.Row
       style={
-        track.type === "heading"
+        props.track.type === "heading"
           ? {
               backgroundColor: "lightgrey",
               fontWeight: "bold",
             }
-          : track.type === "index"
+          : props.track.type === "index"
           ? { fontWeight: "bold", backgroundColor: "#efefef" }
-          : track.type === "track" && track.parentId > 0
+          : props.track.type === "track" && props.track.parentId > 0
           ? { backgroundColor: "rgb(245,245,245)" }
-          : track.type === "track" && track.fileId !== null
+          : props.currentTrack.releaseTrackId === props.track.releaseTrackId
+          ? { background: "rgb(255,230,255)" }
+          : props.track.type === "track" && props.track.fileId !== null
           ? { backgroundColor: "rgb(230,255,255)" }
           : {}
       }
     >
       <Table.Cell verticalAlign='top'>
-        {track.type == "track" ? (
-          track.fileId !== null ? (
+        {props.track.type == "track" ? (
+          props.track.fileId !== null ? (
             <>
-              <Icon name='play' color='green' style={{ marginRight: 10 }} />
-              {!track.fileNamed ? (
+              {props.currentTrack.releaseTrackId ===
+                props.track.releaseTrackId && props.isPlaying ? (
+                <Icon
+                  name='pause'
+                  color='green'
+                  style={{ marginRight: 10 }}
+                  onClick={() => props.pauseTrack(props.track)}
+                />
+              ) : (
+                <Icon
+                  name='play'
+                  color='green'
+                  style={{ marginRight: 10 }}
+                  onClick={() => props.playTrack(props.track)}
+                />
+              )}
+
+              {!props.track.fileNamed ? (
                 <Icon name='exclamation circle' color='yellow' />
               ) : null}
             </>
@@ -36,10 +57,10 @@ const TrackRow = ({ track }) => {
           )
         ) : null}
       </Table.Cell>
-      <Table.Cell verticalAlign='top'>{track.position}</Table.Cell>
+      <Table.Cell verticalAlign='top'>{props.track.position}</Table.Cell>
       <Table.Cell verticalAlign='top'>
-        {track.artists !== null
-          ? track.artists.map((artist, idx) => {
+        {props.track.artists !== null
+          ? props.track.artists.map((artist, idx) => {
               return (
                 <div key={idx}>
                   <Link to={"/artist/" + artist.artistId}>
@@ -52,11 +73,11 @@ const TrackRow = ({ track }) => {
           : null}
       </Table.Cell>
       <Table.Cell verticalAlign='top'>
-        <div style={track.parentId > 0 ? { marginLeft: 20 } : {}}>
-          {track.title}
-          {track.extraArtists !== null ? (
+        <div style={props.track.parentId > 0 ? { marginLeft: 20 } : {}}>
+          {props.track.title}
+          {props.track.extraArtists !== null ? (
             <>
-              {track.extraArtists
+              {props.track.extraArtists
                 .filter((x) => x.categoryName === "remix")
                 .map((artist, idx) => {
                   return (
@@ -80,7 +101,7 @@ const TrackRow = ({ track }) => {
                     </div>
                   );
                 })}
-              {track.extraArtists
+              {props.track.extraArtists
                 .filter((x) => x.categoryName === "writing")
                 .map((artist, idx) => {
                   return (
@@ -104,7 +125,7 @@ const TrackRow = ({ track }) => {
                     </div>
                   );
                 })}
-              {track.extraArtists
+              {props.track.extraArtists
                 .filter((x) => x.categoryName === "production")
                 .map((artist, idx) => {
                   return (
@@ -128,7 +149,7 @@ const TrackRow = ({ track }) => {
                     </div>
                   );
                 })}
-              {track.extraArtists
+              {props.track.extraArtists
                 .filter((x) => x.categoryName === "performance")
                 .map((artist, idx) => {
                   return (
@@ -152,7 +173,7 @@ const TrackRow = ({ track }) => {
                     </div>
                   );
                 })}
-              {track.extraArtists
+              {props.track.extraArtists
                 .filter((x) => x.categoryName === "other")
                 .map((artist, idx) => {
                   return (
@@ -181,12 +202,12 @@ const TrackRow = ({ track }) => {
         </div>
       </Table.Cell>
       <Table.Cell verticalAlign='top'>
-        {track.type === "track"
-          ? new Date(track.duration * 1000).toISOString().substr(14, 5)
+        {props.track.type === "track"
+          ? new Date(props.track.duration * 1000).toISOString().substr(14, 5)
           : null}
       </Table.Cell>
     </Table.Row>
   );
-};
+}
 
-export default TrackRow;
+export default connect(mapStateToProps)(TrackRow);

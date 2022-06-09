@@ -1,3 +1,4 @@
+import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 import {
   Grid,
@@ -11,6 +12,7 @@ import {
 
 import { runApi } from "../../services/services";
 import releaseService from "../../services/release.service";
+import { audioActions } from "../../store/actions";
 
 import Artist from "../widgets/Artist";
 import FormatDescription from "../widgets/FormatDescription";
@@ -18,23 +20,30 @@ import Genre from "../widgets/Genre";
 import TrackManager from "./TrackManager";
 import TrackRow from "../Track/TrackRow";
 
-const ReleaseView = ({
-  release,
-  setRelease,
-  showTrackManagement,
-  setShowTrackManagement,
-  saveFolder,
-}) => {
+const mapDispatchToProps = (dispatch) => ({
+  onBuildSongList: (release) => dispatch(audioActions.buildSongList(release)),
+  onSetCurrentTrack: (track) => dispatch(audioActions.setCurrentTrack(track)),
+  onSetAudioState: (audioState) =>
+    dispatch(audioActions.setAudioState(audioState)),
+});
+
+const ReleaseView = (props) => {
+  const buildSongList = (track) => {
+    props.onBuildSongList(props.release);
+    props.onSetCurrentTrack(track);
+    props.onSetAudioState("play");
+  };
+
   return (
     <Grid columns={16}>
-      {release !== null ? (
+      {props.release !== null ? (
         <>
           <Grid.Row>
             <Grid.Column width={3}>
-              {release.images !== null ? (
-                release.images.length > 0 ? (
+              {props.release.images !== null ? (
+                props.release.images.length > 0 ? (
                   <img
-                    src={release.images[0].uri}
+                    src={props.release.images[0].uri}
                     style={{ height: 300 }}
                     alt='artwork'
                   />
@@ -45,14 +54,14 @@ const ReleaseView = ({
               <Grid columns={16}>
                 <Grid.Row>
                   <Grid.Column width={16}>
-                    <Artist release={release} />
-                    <h3 style={{ marginTop: 5 }}>{release.title}</h3>
+                    <Artist release={props.release} />
+                    <h3 style={{ marginTop: 5 }}>{props.release.title}</h3>
                   </Grid.Column>
                 </Grid.Row>
                 <Grid.Row>
                   <Grid.Column width={16}>
                     <div>
-                      {release.entities
+                      {props.release.entities
                         .filter((x) => x.entityTypeName === "Label")
                         .map((entity) => {
                           return (
@@ -63,11 +72,11 @@ const ReleaseView = ({
                           );
                         })}
                     </div>
-                    {release.entities.filter(
+                    {props.release.entities.filter(
                       (x) => x.entityTypeName === "Series"
                     ).length > 0 ? (
                       <div style={{ marginTop: 10 }}>
-                        {release.entities
+                        {props.release.entities
                           .filter((x) => x.entityTypeName === "Series")
                           .map((entity) => {
                             return (
@@ -82,11 +91,12 @@ const ReleaseView = ({
                       </div>
                     ) : null}
                     <div style={{ marginTop: 10 }}>
-                      {release.releaseDateFormatted} &mdash;{release.country}
+                      {props.release.releaseDateFormatted} &mdash;
+                      {props.release.country}
                     </div>
                     <div style={{ marginTop: 10 }}>
-                      {release.formats !== null
-                        ? release.formats.map((format, idx) => {
+                      {props.release.formats !== null
+                        ? props.release.formats.map((format, idx) => {
                             return (
                               <div key={idx} style={{ marginBottom: 5 }}>
                                 <Label image>
@@ -127,7 +137,7 @@ const ReleaseView = ({
               </Grid>
 
               <div style={{ marginTop: 10 }}>
-                <a href={release.uri} target='_blank' rel='noreferrer'>
+                <a href={props.release.uri} target='_blank' rel='noreferrer'>
                   <img
                     src='https://www.maltego.com/images/uploads/discogs-primary-logo.png'
                     style={{ height: 30 }}
@@ -138,8 +148,8 @@ const ReleaseView = ({
             </Grid.Column>
             <Grid.Column width={6} textAlign='right'>
               <div style={{ textAlign: "right" }}>
-                {release.genres !== null
-                  ? release.genres.map((genre) => {
+                {props.release.genres !== null
+                  ? props.release.genres.map((genre) => {
                       return (
                         <Genre
                           key={genre.genreId}
@@ -153,8 +163,8 @@ const ReleaseView = ({
               <div
                 style={{ marginTop: 10, marginBottom: 15, textAlign: "right" }}
               >
-                {release.styles !== null
-                  ? release.styles.map((style) => {
+                {props.release.styles !== null
+                  ? props.release.styles.map((style) => {
                       return (
                         <span
                           key={style.styleId}
@@ -169,13 +179,16 @@ const ReleaseView = ({
               <div
                 style={{ marginTop: 10, marginBottom: 15, textAlign: "right" }}
               >
-                <Label basic color={release.own === true ? "green" : "red"}>
-                  {release.own !== true ? (
+                <Label
+                  basic
+                  color={props.release.own === true ? "green" : "red"}
+                >
+                  {props.release.own !== true ? (
                     "Want"
                   ) : (
                     <>
                       <Icon name='folder'></Icon>
-                      {release.discogsFolder}
+                      {props.release.discogsFolder}
                     </>
                   )}
                 </Label>
@@ -191,34 +204,40 @@ const ReleaseView = ({
                 <Icon
                   name='hdd'
                   style={{ cursor: "pointer" }}
-                  onClick={() => setShowTrackManagement(true)}
+                  onClick={() => props.setShowTrackManagement(true)}
                 />
                 <Modal
-                  open={showTrackManagement}
-                  onClose={() => setShowTrackManagement(false)}
+                  open={props.showTrackManagement}
+                  onClose={() => props.setShowTrackManagement(false)}
                 >
                   <Modal.Content>
                     <TrackManager
-                      release={release}
-                      setRelease={setRelease}
+                      release={props.release}
+                      setRelease={props.setRelease}
                       refreshRelease={() => {
                         runApi(
-                          () => releaseService.getModel(release.releaseId),
+                          () =>
+                            releaseService.getModel(props.release.releaseId),
                           (data) => {
-                            setRelease(data);
+                            props.setRelease(data);
                           }
                         );
                       }}
-                      onSaveSetFolder={saveFolder}
+                      onSaveSetFolder={props.saveFolder}
                     />
                   </Modal.Content>
                 </Modal>
               </div>
               <Table compact>
                 <Table.Body>
-                  {release.tracks.map((track) => {
+                  {props.release.tracks.map((track) => {
                     return (
-                      <TrackRow key={track.releaseTrackId} track={track} />
+                      <TrackRow
+                        key={track.releaseTrackId}
+                        track={track}
+                        playTrack={buildSongList}
+                        pauseTrack={() => props.onSetAudioState("pause")}
+                      />
                     );
                   })}
                 </Table.Body>
@@ -229,8 +248,8 @@ const ReleaseView = ({
                 Writing
               </Header>
               <div style={{ overflow: "auto" }}>
-                {release.extraArtists !== null
-                  ? release.extraArtists
+                {props.release.extraArtists !== null
+                  ? props.release.extraArtists
                       .filter((x) => x.categoryName === "writing")
                       .map((artist, idx) => {
                         return (
@@ -266,8 +285,8 @@ const ReleaseView = ({
                 Production
               </Header>
               <div style={{ overflow: "auto" }}>
-                {release.extraArtists !== null
-                  ? release.extraArtists
+                {props.release.extraArtists !== null
+                  ? props.release.extraArtists
                       .filter(
                         (x) =>
                           x.categoryName === "production" ||
@@ -307,8 +326,8 @@ const ReleaseView = ({
                 Performance
               </Header>
               <div style={{ overflow: "auto" }}>
-                {release.extraArtists !== null
-                  ? release.extraArtists
+                {props.release.extraArtists !== null
+                  ? props.release.extraArtists
                       .filter((x) => x.categoryName === "performance")
                       .map((artist, idx) => {
                         return (
@@ -344,8 +363,8 @@ const ReleaseView = ({
                 Artwork
               </Header>
               <div style={{ overflow: "auto" }}>
-                {release.extraArtists !== null
-                  ? release.extraArtists
+                {props.release.extraArtists !== null
+                  ? props.release.extraArtists
                       .filter((x) => x.categoryName === "artwork")
                       .map((artist, idx) => {
                         return (
@@ -382,8 +401,8 @@ const ReleaseView = ({
               </Header>
               <div>
                 <List vertical>
-                  {release.extraArtists !== null
-                    ? release.extraArtists
+                  {props.release.extraArtists !== null
+                    ? props.release.extraArtists
                         .filter((x) => x.categoryName === "other")
                         .map((artist, idx) => {
                           return (
@@ -412,8 +431,8 @@ const ReleaseView = ({
               </Header>
               <div>
                 <List vertical>
-                  {release.entities !== null
-                    ? release.entities
+                  {props.release.entities !== null
+                    ? props.release.entities
                         .filter(
                           (x) =>
                             x.entityTypeName !== "Label" &&
@@ -441,8 +460,8 @@ const ReleaseView = ({
               </Header>
               <div>
                 <List vertical>
-                  {release.identifiers !== null
-                    ? release.identifiers.map((identifier, idx) => {
+                  {props.release.identifiers !== null
+                    ? props.release.identifiers.map((identifier, idx) => {
                         return (
                           <List.Item key={idx}>
                             <List.Content>
@@ -462,12 +481,14 @@ const ReleaseView = ({
           </Grid.Row>
           <Grid.Row>
             <Grid.Column width={16}>
-              {release.notes !== null ? (
+              {props.release.notes !== null ? (
                 <>
                   <Header as='h4' dividing>
                     Notes
                   </Header>
-                  <div dangerouslySetInnerHTML={{ __html: release.notes }} />
+                  <div
+                    dangerouslySetInnerHTML={{ __html: props.release.notes }}
+                  />
                 </>
               ) : null}
             </Grid.Column>
@@ -478,4 +499,4 @@ const ReleaseView = ({
   );
 };
 
-export default ReleaseView;
+export default connect(() => ({}), mapDispatchToProps)(ReleaseView);
