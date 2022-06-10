@@ -1,7 +1,7 @@
 import React, { useRef, useEffect } from "react";
 import { connect } from "react-redux";
 
-import { Icon } from "semantic-ui-react";
+import { Icon, Progress } from "semantic-ui-react";
 
 import { audioActions } from "../../store/actions";
 
@@ -14,6 +14,8 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(audioActions.setAudioState(audioState)),
   onSkipBackward: () => dispatch(audioActions.skipBackward()),
   onSkipForward: () => dispatch(audioActions.skipForward()),
+  onSetCurrentTime: (time, duration) =>
+    dispatch(audioActions.setCurrentTime(time, duration)),
 });
 
 function AudioPlayer(props) {
@@ -29,9 +31,21 @@ function AudioPlayer(props) {
     }
   });
 
+  const timeUpdate = () => {
+    console.log(
+      "progress",
+      (audioEl.current.currentTime / audioEl.current.duration) * 100
+    );
+    props.onSetCurrentTime(
+      audioEl.current.currentTime,
+      audioEl.current.duration
+    );
+  };
+
   console.log("props.audio", props.audio);
 
-  return props.audio.currentTrack !== undefined ? (
+  return props.audio.currentTrack !== undefined &&
+    props.audio.currentTrack !== null ? (
     <div style={{ width: "100%" }}>
       <audio
         src={
@@ -40,6 +54,7 @@ function AudioPlayer(props) {
         }
         ref={audioEl}
         onEnded={props.onSkipForward}
+        onTimeUpdate={timeUpdate}
       ></audio>
       <div style={{ float: "left", marginTop: 7, marginRight: 10 }}>
         {props.audio.isPlaying ? (
@@ -87,7 +102,29 @@ function AudioPlayer(props) {
           {props.audio.release.folder.split("\\")[2]})
         </span>
       </div>
-      <div style={{ float: "right", lineHeight: "20px" }}></div>
+      <div
+        style={{
+          float: "left",
+          width: "300px",
+          marginRight: 15,
+          paddingTop: 10,
+        }}
+      >
+        <Progress
+          percent={
+            (props.audio.trackData.currentTime /
+              props.audio.trackData.duration) *
+            100
+          }
+          size='small'
+        />
+      </div>
+      <div
+        style={{ float: "left", marginRight: 15, paddingTop: 10, fontSize: 13 }}
+      >
+        {props.audio.trackData.currentTimeFormatted} /{" "}
+        {props.audio.trackData.durationFormatted}
+      </div>
     </div>
   ) : null;
 }

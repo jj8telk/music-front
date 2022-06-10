@@ -6,6 +6,7 @@ export const audioActions = {
   setAudioState,
   skipBackward,
   skipForward,
+  setCurrentTime,
 };
 
 function buildSongList(release) {
@@ -26,4 +27,19 @@ function skipBackward() {
 
 function skipForward() {
   return { type: audioConstants.SKIP_FORWARD };
+}
+
+function setCurrentTime(time, duration) {
+  if (time === null) time = 0;
+  if (isNaN(duration)) duration = 0;
+  let timeFormatted = new Date(time * 1000).toISOString().substr(14, 5);
+  let durationFormatted = new Date(duration * 1000).toISOString().substr(14, 5);
+
+  return {
+    type: audioConstants.SET_CURRENT_TIME,
+    time,
+    timeFormatted,
+    duration,
+    durationFormatted,
+  };
 }

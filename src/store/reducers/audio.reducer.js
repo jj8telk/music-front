@@ -1,6 +1,16 @@
 import { audioConstants } from "../constants";
 
-const initialState = { songs: null, release: null, currentTrack: null };
+const initialState = {
+  songs: null,
+  release: null,
+  currentTrack: null,
+  trackData: {
+    currentTime: null,
+    duration: null,
+    currentTimeFormatted: null,
+    durationFormatted: null,
+  },
+};
 
 export default function audioReducer(state = initialState, action) {
   let trackIndex = 0;
@@ -28,6 +38,15 @@ export default function audioReducer(state = initialState, action) {
       trackIndex++;
       if (trackIndex > state.songs.length - 1) trackIndex = 0;
       return { ...state, currentTrack: state.songs[trackIndex] };
+    case audioConstants.SET_CURRENT_TIME:
+      let data = {
+        ...state.trackData,
+        currentTime: action.time,
+        currentTimeFormatted: action.timeFormatted,
+        duration: action.duration,
+        durationFormatted: action.durationFormatted,
+      };
+      return { ...state, trackData: data };
     default:
       return state;
   }
