@@ -1,97 +1,80 @@
-import { useEffect, useState } from "react";
+import React, { useRef, useEffect } from "react";
+import { connect } from "react-redux";
+
 import { Icon } from "semantic-ui-react";
 
-const AudioPlayer = ({
-  releaseTrack,
-  playlist,
-  setAudio,
-  loadAudio,
-  playAudio,
-  pauseAudio,
-  stopAudio,
-  setPlayState,
-  playState,
-  currentTrack,
-}) => {
-  //   const [audio, setAudio] = useState(null);
-  //   const [playState, setPlayState] = useState("stop");
+import { audioActions } from "../../store/actions";
 
-  //   useEffect(() => {
-  //     console.log("state changed");
-  //     if (audio !== null) {
-  //       if (playState === "play") audio.play();
-  //       else audio.pause();
-  //     }
-  //   }, [playState]);
+const mapStateToProps = (state) => ({
+  audio: state.audio,
+});
 
-  //   const loadAudio = () => {
-  //     if (playlist.length > 0) {
-  //       var url =
-  //         "https://localhost:5001/Release/audio?releaseTrackId=" +
-  //         playlist[0].releaseTrackId;
-  //       setAudio(new Audio(url));
-  //     }
-  //   };
+const mapDispatchToProps = (dispatch) => ({
+  onSetAudioState: (audioState) =>
+    dispatch(audioActions.setAudioState(audioState)),
+});
 
-  //   const playAudio = () => {
-  //     setPlayState("play");
-  //     loadAudio();
-  //   };
+function AudioPlayer(props) {
+  const audioEl = useRef(null);
 
-  //   const pauseAudio = () => {
-  //     setPlayState("pause");
-  //     if (audio !== null) audio.pause();
-  //   };
-
-  //   const stopAudio = () => {
-  //     setPlayState("stop");
-  //     if (audio !== null) audio.pause();
-  //   };
+  useEffect(() => {
+    if (audioEl.current !== null) {
+      if (props.audio.isPlaying) {
+        audioEl.current.play();
+      } else {
+        audioEl.current.pause();
+      }
+    }
+  });
 
   return (
-    <div>
-      {currentTrack !== null ? (
-        <>
-          <div style={{ float: "left", marginTop: 10 }}>
-            <Icon
-              name='play'
-              onClick={playAudio}
-              color={playState === "play" ? "green" : "black"}
-              size='large'
-            />
-            <Icon name='pause' onClick={pauseAudio} size='large' />
-            <Icon name='stop' onClick={stopAudio} size='large' />
-          </div>
-          <div style={{ float: "right", marginLeft: 10 }}>
-            <>
-              <div style={{ float: "left", margin: "0 10px 0 0" }}>
-                <img src={currentTrack.coverArtUrl} style={{ maxHeight: 40 }} />
-              </div>
-              <div
-                style={{
-                  marginTop: 0,
-                  float: "right",
-                  lineHeight: "20px",
-                }}
-              >
-                <span style={{ fontSize: 16 }}>
-                  <strong>{currentTrack.release.albumArtist}</strong>
-                  &nbsp;&nbsp;
-                  {currentTrack.title}
-                </span>
-                <br />
-                <span style={{ fontStyle: "italic", fontSize: 14 }}>
-                  <strong>{currentTrack.release.title}</strong> (
-                  {currentTrack.release.folder.split("\\")[2].replace("'", '"')}
-                  )
-                </span>
-              </div>
-            </>
-          </div>
-        </>
+    <div style={{ width: "100%" }}>
+      <audio
+        src={
+          "http://localhost:5000/Release/audio?releaseTrackId=" +
+          props.audio.currentTrack.releaseTrackId
+        }
+        ref={audioEl}
+      ></audio>
+      <div style={{ float: "left", marginTop: 7, marginRight: 10 }}>
+        {props.audio.isPlaying ? (
+          <Icon
+            name='pause'
+            size='large'
+            onClick={() => props.onSetAudioState("pause")}
+          />
+        ) : (
+          <Icon
+            name='play'
+            size='large'
+            onClick={() => props.onSetAudioState("play")}
+          />
+        )}
+      </div>
+      {props.audio.release.images.length > 0 ? (
+        <div style={{ float: "left", marginRight: 15 }}>
+          <img
+            src={props.audio.release.images[0].uri}
+            style={{ height: 40 }}
+            alt='artwork'
+            align='left'
+          />
+        </div>
       ) : null}
+      <div style={{ float: "left", lineHeight: "20px", marginRight: 15 }}>
+        <span>
+          <strong>{props.audio.currentTrack.title}</strong> by{" "}
+          {props.audio.release.albumArtist}
+        </span>
+        <br />
+        <span style={{ fontStyle: "italic", fontSize: 13 }}>
+          {props.audio.release.title} (
+          {props.audio.release.folder.split("\\")[2]})
+        </span>
+      </div>
+      <div style={{ float: "right", lineHeight: "20px" }}></div>
     </div>
   );
-};
+}
 
-export default AudioPlayer;
+export default connect(mapStateToProps, mapDispatchToProps)(AudioPlayer);
