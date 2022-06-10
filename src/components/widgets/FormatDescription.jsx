@@ -11,12 +11,10 @@ const FormatDescription = ({ description }) => {
       break;
     case "Album":
     case "LP":
-      color = "purple";
+      color = "blue";
       break;
     case "Maxi-Single":
     case "Single":
-      color = "blue";
-      break;
     case '12"':
     case '10"':
     case '7"':

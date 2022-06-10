@@ -51,14 +51,16 @@ function AudioPlayer(props) {
           />
         )}
       </div>
-      <div style={{ float: "left", marginRight: 15 }}>
-        <img
-          src={props.audio.release.images[0].uri}
-          style={{ height: 40 }}
-          alt='artwork'
-          align='left'
-        />
-      </div>
+      {props.audio.release.images.length > 0 ? (
+        <div style={{ float: "left", marginRight: 15 }}>
+          <img
+            src={props.audio.release.images[0].uri}
+            style={{ height: 40 }}
+            alt='artwork'
+            align='left'
+          />
+        </div>
+      ) : null}
       <div style={{ float: "left", lineHeight: "20px", marginRight: 15 }}>
         <span>
           <strong>{props.audio.currentTrack.title}</strong> by{" "}

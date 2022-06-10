@@ -67,7 +67,7 @@ const Releases = ({ toggleDiscogs }) => {
     { key: 0, value: "4500023", text: "Main" },
     { key: 1, value: "4499918", text: "Classical" },
     { key: 2, value: "4361528", text: "Others" },
-    { key: 3, value: "4551116", text: "Comedy"}
+    { key: 3, value: "4551116", text: "Comedy" },
   ];
 
   useEffect(() => {
@@ -321,11 +321,16 @@ const Releases = ({ toggleDiscogs }) => {
                       >
                         <Table.Cell
                           style={{
-                            borderLeft: release.own
-                              ? release.totalTracks === release.rippedTracks
-                                ? "10px solid rgb(100,210,100)"
-                                : "10px solid rgb(210,100,100)"
-                              : "10px solid rgb(240,240,240)",
+                            borderLeft:
+                              release.releaseType === "Album"
+                                ? "10px solid #2185d0"
+                                : release.releaseType === "EP"
+                                ? "10px solid #00b5ad"
+                                : release.releaseType === "Single"
+                                ? "10px solid #21ba45"
+                                : release.releaseType === "Compilation"
+                                ? "10px solid #fbbd08"
+                                : "10px solid #cccccc",
                           }}
                         >
                           {/* {release.own ? (
@@ -343,6 +348,22 @@ const Releases = ({ toggleDiscogs }) => {
                           ) : null} */}
                         </Table.Cell>
                         <Table.Cell>
+                          {release.own ? (
+                            <Icon
+                              name='play'
+                              size='large'
+                              style={{
+                                color:
+                                  release.totalTracks === release.rippedTracks
+                                    ? "#21ba45"
+                                    : release.rippedTracks === 0
+                                    ? "#dddddd"
+                                    : "orange",
+                              }}
+                            />
+                          ) : null}
+                        </Table.Cell>
+                        <Table.Cell>
                           <img
                             src={
                               process.env.REACT_APP_CORE_API +
@@ -352,33 +373,7 @@ const Releases = ({ toggleDiscogs }) => {
                             style={{ height: 40, marginRight: 7 }}
                           />
                         </Table.Cell>
-                        <Table.Cell>
-                          <Icon
-                            name='square'
-                            color={
-                              release.releaseType === "Album"
-                                ? "purple"
-                                : release.releaseType === "EP"
-                                ? "teal"
-                                : release.releaseType === "Single"
-                                ? "blue"
-                                : release.releaseType === "Compilation"
-                                ? "yellow"
-                                : "black"
-                            }
-                            alt={
-                              release.releaseType === "Album"
-                                ? "purple"
-                                : release.releaseType === "EP"
-                                ? "teal"
-                                : release.releaseType === "Single"
-                                ? "blue"
-                                : release.releaseType === "Compilation"
-                                ? "yellow"
-                                : "black"
-                            }
-                          />
-                        </Table.Cell>
+
                         <Table.Cell>
                           {release.images !== null ? (
                             release.images.length > 0 ? (
