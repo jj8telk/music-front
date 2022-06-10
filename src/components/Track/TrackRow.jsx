@@ -20,7 +20,8 @@ function TrackRow(props) {
           ? { fontWeight: "bold", backgroundColor: "#efefef" }
           : props.track.type === "track" && props.track.parentId > 0
           ? { backgroundColor: "rgb(245,245,245)" }
-          : props.currentTrack.releaseTrackId === props.track.releaseTrackId
+          : props.currentTrack !== undefined &&
+            props.currentTrack.releaseTrackId === props.track.releaseTrackId
           ? { background: "rgb(255,230,255)" }
           : props.track.type === "track" && props.track.fileId !== null
           ? { backgroundColor: "rgb(230,255,255)" }
@@ -31,8 +32,10 @@ function TrackRow(props) {
         {props.track.type == "track" ? (
           props.track.fileId !== null ? (
             <>
-              {props.currentTrack.releaseTrackId ===
-                props.track.releaseTrackId && props.isPlaying ? (
+              {props.currentTrack !== undefined &&
+              props.currentTrack.releaseTrackId ===
+                props.track.releaseTrackId &&
+              props.isPlaying ? (
                 <Icon
                   name='pause'
                   color='green'

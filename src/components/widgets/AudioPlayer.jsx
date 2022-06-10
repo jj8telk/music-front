@@ -12,6 +12,8 @@ const mapStateToProps = (state) => ({
 const mapDispatchToProps = (dispatch) => ({
   onSetAudioState: (audioState) =>
     dispatch(audioActions.setAudioState(audioState)),
+  onSkipBackward: () => dispatch(audioActions.skipBackward()),
+  onSkipForward: () => dispatch(audioActions.skipForward()),
 });
 
 function AudioPlayer(props) {
@@ -27,7 +29,9 @@ function AudioPlayer(props) {
     }
   });
 
-  return (
+  console.log("props.audio", props.audio);
+
+  return props.audio.currentTrack !== undefined ? (
     <div style={{ width: "100%" }}>
       <audio
         src={
@@ -35,6 +39,7 @@ function AudioPlayer(props) {
           props.audio.currentTrack.releaseTrackId
         }
         ref={audioEl}
+        onEnded={props.onSkipForward}
       ></audio>
       <div style={{ float: "left", marginTop: 7, marginRight: 10 }}>
         {props.audio.isPlaying ? (
@@ -50,6 +55,16 @@ function AudioPlayer(props) {
             onClick={() => props.onSetAudioState("play")}
           />
         )}
+        <Icon
+          name='fast backward'
+          size='large'
+          onClick={() => props.onSkipBackward()}
+        />
+        <Icon
+          name='fast forward'
+          size='large'
+          onClick={() => props.onSkipForward()}
+        />
       </div>
       {props.audio.release.images.length > 0 ? (
         <div style={{ float: "left", marginRight: 15 }}>
@@ -74,7 +89,7 @@ function AudioPlayer(props) {
       </div>
       <div style={{ float: "right", lineHeight: "20px" }}></div>
     </div>
-  );
+  ) : null;
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(AudioPlayer);

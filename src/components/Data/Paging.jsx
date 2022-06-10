@@ -1,6 +1,15 @@
+import { useState } from "react";
 import { Menu, Icon, Input, Button } from "semantic-ui-react";
 
 const Paging = ({ pageNumbers, currentPage, setPage, setCurrentPage }) => {
+  const [goToPage, setGoToPage] = useState(currentPage);
+
+  const setSetGoToPage = (e) => {
+    setGoToPage(e);
+    setCurrentPage(e);
+    setPage(e);
+  };
+
   return (
     <>
       <Menu floated='right' pagination>
@@ -41,13 +50,13 @@ const Paging = ({ pageNumbers, currentPage, setPage, setCurrentPage }) => {
         placeholder='Page'
         value={currentPage}
         onChange={(event) => {
-          setCurrentPage(event.target.value);
+          setSetGoToPage(event.target.value);
         }}
       />
       <Button
         color='blue'
         onClick={() => {
-          setPage(currentPage);
+          setPage(goToPage);
         }}
       >
         Go To Page
