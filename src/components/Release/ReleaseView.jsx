@@ -38,7 +38,282 @@ const ReleaseView = (props) => {
     <Grid columns={16}>
       {props.release !== null ? (
         <>
-          <Grid.Row>
+          <Grid.Row
+            style={{
+              backgroundColor: "rgb(50,50,50)",
+              padding: 10,
+              height: 250,
+            }}
+          >
+            <Grid.Column width={10}>
+              <div
+                style={{
+                  bottom: 0,
+                  position: "absolute",
+                  fontFamily: "sans-serif",
+                  color: "white",
+                  lineHeight: "50px",
+                }}
+              >
+                <Link to={"/artist/" + props.release.albumArtist}>
+                  <span
+                    style={{
+                      fontSize: props.release.albumArtist.length > 70 ? 50 : 75,
+                      fontWeight: "bold",
+                      color: "white",
+                      fontFamily: "'Oswald', sans-serif",
+                    }}
+                  >
+                    {props.release.albumArtist}
+                  </span>
+                </Link>
+                <br />
+                <span
+                  style={{
+                    fontSize: props.release.title.length > 70 ? 25 : 50,
+                    color: "white",
+                    fontFamily: "'Oswald', sans-serif",
+                    textTransform: "uppercase",
+                  }}
+                >
+                  {props.release.title} (
+                  {props.release.releaseDateFormatted !== ""
+                    ? props.release.releaseDateFormatted + ", "
+                    : null}
+                  {props.release.country})
+                </span>
+              </div>
+            </Grid.Column>
+            <Grid.Column width={6} align='right'>
+              <div
+                style={{
+                  float: "right",
+                  marginRight: 10,
+                  bottom: 0,
+                  textAlign: "right",
+                }}
+              >
+                {props.release.images !== null ? (
+                  props.release.images.length > 0 ? (
+                    <img
+                      src={props.release.images[0].uri}
+                      style={{ maxHeight: 230 }}
+                      alt='artwork'
+                    />
+                  ) : null
+                ) : null}
+              </div>
+              <div
+                style={{
+                  float: "right",
+                  marginRight: 10,
+                  bottom: 0,
+                  textAlign: "right",
+                }}
+              >
+                <div style={{ marginBottom: 10 }}>
+                  <Label
+                    basic
+                    size='large'
+                    color={props.release.own === true ? "green" : "red"}
+                  >
+                    {props.release.own !== true ? (
+                      "Want"
+                    ) : (
+                      <>
+                        <Icon name='folder'></Icon>
+                        {props.release.discogsFolder}
+                      </>
+                    )}
+                  </Label>
+                </div>
+                {props.release.entities
+                  .filter((x) => x.entityTypeName === "Label")
+                  .map((entity) => {
+                    return (
+                      <div>
+                        <Label key={entity.entityId} size='big' basic>
+                          {entity.entityName}
+                          <Label.Detail>{entity.catNo}</Label.Detail>
+                        </Label>
+                      </div>
+                    );
+                  })}
+                {props.release.entities.filter(
+                  (x) => x.entityTypeName === "Series"
+                ).length > 0 ? (
+                  <div style={{ marginTop: 10 }}>
+                    {props.release.entities
+                      .filter((x) => x.entityTypeName === "Series")
+                      .map((entity) => {
+                        return (
+                          <Label key={entity.entityId} basic>
+                            {entity.entityName}
+                            {entity.catNo !== null ? (
+                              <Label.Detail>{entity.catNo}</Label.Detail>
+                            ) : null}
+                          </Label>
+                        );
+                      })}
+                  </div>
+                ) : null}
+                <div style={{ marginTop: 10 }}>
+                  <a href={props.release.uri} target='_blank' rel='noreferrer'>
+                    <Label size='tiny'>
+                      <img
+                        src='https://www.maltego.com/images/uploads/discogs-primary-logo.png'
+                        style={{ height: 10 }}
+                        alt='discogs logo'
+                      />
+                    </Label>
+                  </a>
+                </div>
+              </div>
+            </Grid.Column>
+          </Grid.Row>
+          <Grid.Row
+            style={{
+              backgroundColor: "rgb(240,240,240)",
+              borderLeft:
+                props.release.releaseType === "Album"
+                  ? "25px solid #2185d0"
+                  : props.release.releaseType === "EP"
+                  ? "25px solid #00b5ad"
+                  : props.release.releaseType === "Single" ||
+                    props.release.releaseType === "Maxi-Single" ||
+                    props.release.releaseType === '12"' ||
+                    props.release.releaseType === '10"' ||
+                    props.release.releaseType === '7"'
+                  ? "25px solid #21ba45"
+                  : props.release.releaseType === "Compilation"
+                  ? "25px solid #fbbd08"
+                  : null,
+            }}
+          >
+            <Grid.Column width={5}>
+              {props.release.formats !== null
+                ? props.release.formats.map((format, idx) => {
+                    return (
+                      <>
+                        <div style={{ float: "left" }}>
+                          <img
+                            src={
+                              process.env.REACT_APP_CORE_API +
+                              "Release/formatIcon/" +
+                              format.format
+                            }
+                            style={{ maxHeight: 70, marginRight: 10 }}
+                          />
+                        </div>
+                        <div
+                          style={{
+                            fontSize: 40,
+                            textTransform: "uppercase",
+                            fontFamily: "Verdana",
+                            float: "left",
+                            marginTop: 10,
+                          }}
+                        >
+                          <Label size='massive'>
+                            {format.qty > 1 ? <span>{format.qty}x</span> : null}
+                            {format.format}
+                            {format.text !== null ? (
+                              <Label.Detail>{format.text}</Label.Detail>
+                            ) : null}
+                            {format.descriptions !== null
+                              ? format.descriptions
+                                  .filter(
+                                    (x) =>
+                                      x === '12"' ||
+                                      x === '10"' ||
+                                      x === '7"' ||
+                                      x === "45 RPM" ||
+                                      x === "33 ⅓ RPM"
+                                  )
+                                  .map((description, idx) => {
+                                    return <span>{", " + description}</span>;
+                                  })
+                              : null}
+                          </Label>
+                        </div>
+                      </>
+                    );
+                  })
+                : null}
+            </Grid.Column>
+            <Grid.Column width={11}>
+              <div style={{ float: "left", marginRight: 10, marginTop: 15 }}>
+                {props.release.formats !== null
+                  ? props.release.formats.map((format, idx) => {
+                      return (
+                        <div key={idx} style={{ marginBottom: 5 }}>
+                          {format.descriptions !== null
+                            ? format.descriptions
+                                .filter(
+                                  (x) =>
+                                    x !== "Album" &&
+                                    x !== "Single" &&
+                                    x !== "Maxi-Single" &&
+                                    x !== "Compilation" &&
+                                    x !== '12"' &&
+                                    x !== '10"' &&
+                                    x !== '7"' &&
+                                    x !== "45 RPM" &&
+                                    x !== "33 ⅓ RPM"
+                                )
+                                .map((description, idx) => {
+                                  return (
+                                    <FormatDescription
+                                      key={idx}
+                                      description={description}
+                                      size='big'
+                                    />
+                                  );
+                                })
+                            : null}
+                        </div>
+                      );
+                    })
+                  : null}
+              </div>
+              <div style={{ float: "right", paddingRight: 20 }}>
+                <div style={{ textAlign: "right" }}>
+                  {props.release.genres !== null
+                    ? props.release.genres.map((genre) => {
+                        return (
+                          <Genre
+                            key={genre.genreId}
+                            genre={genre.name}
+                            size='large'
+                          />
+                        );
+                      })
+                    : null}
+                </div>
+                <div
+                  style={{
+                    marginTop: 10,
+                    marginBottom: 15,
+                    textAlign: "right",
+                  }}
+                >
+                  {props.release.styles !== null
+                    ? props.release.styles.map((style) => {
+                        return (
+                          <span
+                            key={style.styleId}
+                            style={{ marginRight: 20, fontSize: 13 }}
+                          >
+                            {style.name}
+                          </span>
+                        );
+                      })
+                    : null}
+                </div>
+              </div>
+            </Grid.Column>
+          </Grid.Row>
+          {/* <Grid.Row>
             <Grid.Column width={3}>
               {props.release.images !== null ? (
                 props.release.images.length > 0 ? (
@@ -194,8 +469,8 @@ const ReleaseView = (props) => {
                 </Label>
               </div>
             </Grid.Column>
-          </Grid.Row>
-          <Grid.Row>
+          </Grid.Row> */}
+          <Grid.Row style={{ paddingLeft: 20, paddingRight: 20 }}>
             <Grid.Column width={8}>
               <div>
                 <span style={{ fontWeight: "bold", marginRight: 10 }}>
@@ -479,7 +754,7 @@ const ReleaseView = (props) => {
               </div>
             </Grid.Column>
           </Grid.Row>
-          <Grid.Row>
+          <Grid.Row style={{ paddingLeft: 20, paddingRight: 20 }}>
             <Grid.Column width={16}>
               {props.release.notes !== null ? (
                 <>

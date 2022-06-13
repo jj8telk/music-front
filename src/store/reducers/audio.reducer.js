@@ -10,6 +10,7 @@ const initialState = {
     currentTimeFormatted: null,
     durationFormatted: null,
   },
+  scrubTime: null,
 };
 
 export default function audioReducer(state = initialState, action) {
@@ -19,7 +20,7 @@ export default function audioReducer(state = initialState, action) {
       return {
         ...state,
         release: action.release,
-        songs: action.release.tracks,
+        songs: action.release.tracks.filter((x) => x.type === "track"),
       };
     case audioConstants.SET_CURRENT_TRACK:
       return { ...state, currentTrack: action.track };
@@ -47,6 +48,8 @@ export default function audioReducer(state = initialState, action) {
         durationFormatted: action.durationFormatted,
       };
       return { ...state, trackData: data };
+    case audioConstants.SCRUB_TIME:
+      return { ...state, scrubTime: action.time };
     default:
       return state;
   }

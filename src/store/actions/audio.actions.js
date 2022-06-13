@@ -7,6 +7,7 @@ export const audioActions = {
   skipBackward,
   skipForward,
   setCurrentTime,
+  scrubTime,
 };
 
 function buildSongList(release) {
@@ -42,4 +43,8 @@ function setCurrentTime(time, duration) {
     duration,
     durationFormatted,
   };
+}
+
+function scrubTime(time) {
+  return { type: audioConstants.SCRUB_TIME, time };
 }

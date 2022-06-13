@@ -1,6 +1,6 @@
 import { Label } from "semantic-ui-react";
 
-const FormatDescription = ({ description }) => {
+const FormatDescription = ({ description, size = "medium" }) => {
   let color = "lightgrey";
   switch (description) {
     case "CD":
@@ -46,7 +46,11 @@ const FormatDescription = ({ description }) => {
   if (description.includes("Remastered") > 0) color = "red";
   if (description.includes("Repress") > 0) color = "red";
 
-  return <Label color={color}>{description}</Label>;
+  return (
+    <Label color={color} size={size}>
+      {description}
+    </Label>
+  );
 };
 
 export default FormatDescription;

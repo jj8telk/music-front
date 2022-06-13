@@ -9,10 +9,7 @@ const Layout = ({ children, toggleDiscogs, setToggleDiscogs }) => {
         toggleDiscogs={toggleDiscogs}
         setToggleDiscogs={setToggleDiscogs}
       />
-      <Container
-        fluid
-        style={{ marginTop: "5em", padding: "0 25px 25px 25px" }}
-      >
+      <Container fluid style={{ marginTop: "5em", padding: "0" }}>
         {children}
       </Container>
       <LayoutFooter />

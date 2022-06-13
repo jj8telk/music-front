@@ -16,6 +16,7 @@ const mapDispatchToProps = (dispatch) => ({
   onSkipForward: () => dispatch(audioActions.skipForward()),
   onSetCurrentTime: (time, duration) =>
     dispatch(audioActions.setCurrentTime(time, duration)),
+  onScrubTime: (time) => dispatch(audioActions.scrubTime(time)),
 });
 
 function AudioPlayer(props) {
@@ -32,17 +33,18 @@ function AudioPlayer(props) {
   });
 
   const timeUpdate = () => {
-    console.log(
-      "progress",
-      (audioEl.current.currentTime / audioEl.current.duration) * 100
-    );
     props.onSetCurrentTime(
       audioEl.current.currentTime,
       audioEl.current.duration
     );
   };
 
-  console.log("props.audio", props.audio);
+  const onScrub = (time) => {
+    props.onSetAudioState("pause");
+    props.onSetCurrentTime(time, audioEl.current.duration);
+    audioEl.current.currentTime = props.audio.trackData.currentTime;
+    props.onSetAudioState("play");
+  };
 
   return props.audio.currentTrack !== undefined &&
     props.audio.currentTrack !== null ? (
@@ -110,13 +112,23 @@ function AudioPlayer(props) {
           paddingTop: 10,
         }}
       >
-        <Progress
+        {/* <Progress
           percent={
             (props.audio.trackData.currentTime /
               props.audio.trackData.duration) *
             100
           }
           size='small'
+        /> */}
+
+        <input
+          type='range'
+          value={props.audio.trackData.currentTime}
+          step='1'
+          min='0'
+          max={props.audio.trackData.duration}
+          style={{ width: "100%" }}
+          onChange={(e) => onScrub(e.target.value)}
         />
       </div>
       <div
