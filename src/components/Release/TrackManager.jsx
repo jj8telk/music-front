@@ -157,6 +157,7 @@ const TrackManager = ({
             }}
           >
             {release.folder}
+            {toggleRenameTracks ? <span>{release.standard}</span> : null}
           </span>
         </Grid.Column>
       </Grid.Row>

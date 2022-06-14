@@ -294,17 +294,6 @@ const Releases = ({ toggleDiscogs }) => {
                       />
                     </Table.HeaderCell>
                   </Table.Row>
-                  {/* <Table.Row>
-                    <Table.HeaderCell></Table.HeaderCell>
-                    <Table.HeaderCell></Table.HeaderCell>
-                    <Table.HeaderCell></Table.HeaderCell>
-                    <Table.HeaderCell></Table.HeaderCell>
-                    <Table.HeaderCell></Table.HeaderCell>
-                    <Table.HeaderCell></Table.HeaderCell>
-                    <Table.HeaderCell></Table.HeaderCell>
-                    <Table.HeaderCell></Table.HeaderCell>
-                    <Table.HeaderCell></Table.HeaderCell>
-                  </Table.Row> */}
                 </Table.Header>
                 <Table.Body>
                   {tableData.data.map((release) => {
@@ -332,30 +321,20 @@ const Releases = ({ toggleDiscogs }) => {
                                 ? "10px solid #fbbd08"
                                 : "10px solid #cccccc",
                           }}
-                        >
-                          {/* {release.own ? (
-                            <Icon
-                              name='circle'
-                              size='small'
-                              color={
-                                release.totalTracks === release.rippedTracks
-                                  ? "green"
-                                  : release.rippedTracks > 0
-                                  ? "yellow"
-                                  : "red"
-                              }
-                            />
-                          ) : null} */}
-                        </Table.Cell>
+                        ></Table.Cell>
                         <Table.Cell>
                           {release.own ? (
                             <Icon
-                              name='play'
+                              name={
+                                release.totalTracks === release.rippedTracks
+                                  ? "folder"
+                                  : "folder outline"
+                              }
                               size='large'
                               style={{
                                 color:
                                   release.totalTracks === release.rippedTracks
-                                    ? "#21ba45"
+                                    ? "#fed840"
                                     : release.rippedTracks === 0
                                     ? "#dddddd"
                                     : "orange",
@@ -373,7 +352,6 @@ const Releases = ({ toggleDiscogs }) => {
                             style={{ height: 40, marginRight: 7 }}
                           />
                         </Table.Cell>
-
                         <Table.Cell>
                           {release.images !== null ? (
                             release.images.length > 0 ? (
@@ -404,18 +382,6 @@ const Releases = ({ toggleDiscogs }) => {
                             )}
                           </span>
                         </Table.Cell>
-
-                        {/* <Table.Cell>
-                          {release.formats !== null
-                            ? release.formats.map((format) => {
-                                return (
-                                  <FormatDescription
-                                    description={format.description}
-                                  />
-                                );
-                              })
-                            : null}
-                        </Table.Cell> */}
                         <Table.Cell>
                           <span style={{ fontSize: 16, marginRight: 10 }}>
                             {release.releaseDateFormatted}
@@ -466,135 +432,7 @@ const Releases = ({ toggleDiscogs }) => {
                   })}
                 </Table.Body>
               </Table>
-            ) : // <Table compact>
-            //   <Table.Header>
-            //     <Table.Row>
-            //       <Table.HeaderCell colSpan='11'>
-            //         <Paging
-            //           pageNumbers={pageNumbers}
-            //           currentPage={currentPage}
-            //           setPage={setPage}
-            //           setCurrentPage={setCurrentPage}
-            //         />
-            //       </Table.HeaderCell>
-            //     </Table.Row>
-            //     <Table.Row>
-            //       <Table.HeaderCell>
-            //         <Icon name='music' />
-            //       </Table.HeaderCell>
-            //       <Table.HeaderCell>
-            //         <Icon name='shopping bag' />
-            //       </Table.HeaderCell>
-            //       <Table.HeaderCell>Album Artist</Table.HeaderCell>
-            //       <Table.HeaderCell></Table.HeaderCell>
-            //       <Table.HeaderCell>Release</Table.HeaderCell>
-            //       <Table.HeaderCell>Release Date</Table.HeaderCell>
-            //       <Table.HeaderCell>Country</Table.HeaderCell>
-            //       <Table.HeaderCell>Format</Table.HeaderCell>
-            //       <Table.HeaderCell></Table.HeaderCell>
-            //       <Table.HeaderCell>Label</Table.HeaderCell>
-            //       <Table.HeaderCell>Genre</Table.HeaderCell>
-            //     </Table.Row>
-            //   </Table.Header>
-            //   <Table.Body>
-            //     {tableData.data.map((release) => {
-            //       return (
-            //         <Table.Row key={release.id}>
-            //           <Table.Cell>
-            //             <Icon
-            //               name='circle'
-            //               color={
-            //                 release.totalTracks === release.rippedTracks
-            //                   ? "green"
-            //                   : release.rippedTracks > 0
-            //                   ? "yellow"
-            //                   : "grey"
-            //               }
-            //             />
-            //           </Table.Cell>
-            //           <Table.Cell>
-            //             <Icon
-            //               name='circle'
-            //               color={release.own ? "green" : "red"}
-            //             />
-            //           </Table.Cell>
-            //           <Table.Cell>
-            //             <Link to={"/artist/" + release.albumArtist}>
-            //               {release.albumArtist}
-            //             </Link>
-            //           </Table.Cell>
-            //           <Table.Cell>
-            //             <img
-            //               src={
-            //                 process.env.REACT_APP_CORE_API +
-            //                 "Release/formatIcon/" +
-            //                 release.formatString
-            //               }
-            //               style={{ height: 20 }}
-            //             />
-            //           </Table.Cell>
-            //           <Table.Cell>
-            //             {toggleDiscogs ? (
-            //               <Link to={"/discogsRelease/" + release.discogsId}>
-            //                 {release.title}
-            //               </Link>
-            //             ) : (
-            //               <Link to={"/release/" + release.releaseId}>
-            //                 {release.title}
-            //               </Link>
-            //             )}
-            //           </Table.Cell>
-            //           <Table.Cell>{release.releaseDateFormatted}</Table.Cell>
-            //           <Table.Cell>{release.country}</Table.Cell>
-            //           <Table.Cell>
-            //             {release.formats !== null
-            //               ? release.formats.map((format) => {
-            //                   return (
-            //                     <FormatDescription
-            //                       description={format.description}
-            //                     />
-            //                   );
-            //                 })
-            //               : null}
-            //           </Table.Cell>
-            //           <Table.Cell>
-            //             {release.formatDescriptions !== null
-            //               ? release.formatDescriptions.map((description) => {
-            //                   return (
-            //                     <FormatDescription
-            //                       description={description.description}
-            //                     />
-            //                   );
-            //                 })
-            //               : null}
-            //           </Table.Cell>
-            //           <Table.Cell>
-            //             {release.labels !== null
-            //               ? release.labels.map((label) => {
-            //                   return (
-            //                     <Label basic>
-            //                       {label.entity}
-            //                       <LabelDetail color='blue'>
-            //                         {label.catNo}
-            //                       </LabelDetail>
-            //                     </Label>
-            //                   );
-            //                 })
-            //               : null}
-            //           </Table.Cell>
-            //           <Table.Cell>
-            //             {release.genres !== null
-            //               ? release.genres.map((genre) => {
-            //                   return <Genre genre={genre.name} />;
-            //                 })
-            //               : null}
-            //           </Table.Cell>
-            //         </Table.Row>
-            //       );
-            //     })}
-            //   </Table.Body>
-            // </Table>
-            null}
+            ) : null}
           </Grid.Column>
         </Grid.Row>
       </Grid>

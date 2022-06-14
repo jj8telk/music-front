@@ -32,15 +32,36 @@ const RenameFiles = ({ releaseId, onSave, onCancel }) => {
                 return (
                   <>
                     <Table.Row>
-                      <Table.Cell>{file.path}</Table.Cell>
+                      <Table.Cell>
+                        {
+                          file.path.split("\\")[
+                            file.path.split("\\").length - 1
+                          ]
+                        }
+                      </Table.Cell>
                     </Table.Row>
                     <Table.Row>
-                      <Table.Cell>
-                        <Icon name='arrow right'></Icon>
-                        <strong>{file.standard}</strong>
+                      <Table.Cell
+                        style={{
+                          backgroundColor:
+                            file.path !== file.standard
+                              ? "rgb(248,252,207)"
+                              : null,
+                        }}
+                      >
+                        {
+                          file.standard.split("\\")[
+                            file.standard.split("\\").length - 1
+                          ]
+                        }
                       </Table.Cell>
                       <Table.Cell>
-                        {file.path !== file.standard ? (
+                        {file.path.split("\\")[
+                          file.path.split("\\").length - 1
+                        ] !==
+                        file.standard.split("\\")[
+                          file.standard.split("\\").length - 1
+                        ] ? (
                           <Icon name='exclamation circle' color='yellow' />
                         ) : (
                           <Icon name='check' color='green' />

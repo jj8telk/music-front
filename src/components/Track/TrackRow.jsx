@@ -18,12 +18,12 @@ function TrackRow(props) {
             }
           : props.track.type === "index"
           ? { fontWeight: "bold", backgroundColor: "#efefef" }
-          : props.track.type === "track" && props.track.parentId > 0
-          ? { backgroundColor: "rgb(245,245,245)" }
           : props.currentTrack !== undefined &&
             props.currentTrack !== null &&
             props.currentTrack.releaseTrackId === props.track.releaseTrackId
           ? { background: "rgb(255,230,255)" }
+          : props.track.type === "track" && props.track.parentId > 0
+          ? { backgroundColor: "rgb(245,245,245)" }
           : props.track.type === "track" && props.track.fileId !== null
           ? { backgroundColor: "rgb(230,255,255)" }
           : {}
