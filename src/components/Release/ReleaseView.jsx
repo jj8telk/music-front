@@ -40,7 +40,12 @@ const ReleaseView = (props) => {
         <>
           <Grid.Row
             style={{
-              backgroundColor: "rgb(50,50,50)",
+              background:
+                props.release.images.length > 0
+                  ? "linear-gradient(10deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('" +
+                    props.release.images[0].uri +
+                    "') center top"
+                  : "rgb(50,50,50)",
               padding: 10,
               height: 250,
             }}
@@ -53,6 +58,7 @@ const ReleaseView = (props) => {
                   fontFamily: "sans-serif",
                   color: "white",
                   lineHeight: "50px",
+                  textShadow: "3px 3px #000",
                 }}
               >
                 <Link to={"/artist/" + props.release.albumArtist}>
@@ -88,18 +94,20 @@ const ReleaseView = (props) => {
               <div
                 style={{
                   float: "right",
-                  marginRight: 10,
+                  marginRight: 0,
                   bottom: 0,
                   textAlign: "right",
                 }}
               >
                 {props.release.images !== null ? (
                   props.release.images.length > 0 ? (
-                    <img
-                      src={props.release.images[0].uri}
-                      style={{ maxHeight: 230 }}
-                      alt='artwork'
-                    />
+                    <div style={{ border: "1px solid #000" }}>
+                      <img
+                        src={props.release.images[0].uri}
+                        style={{ maxHeight: 230 }}
+                        alt='artwork'
+                      />
+                    </div>
                   ) : null
                 ) : null}
               </div>
@@ -132,7 +140,13 @@ const ReleaseView = (props) => {
                   .map((entity) => {
                     return (
                       <div>
-                        <Label key={entity.entityId} size='big' basic>
+                        <Label
+                          key={entity.entityId}
+                          size={
+                            props.release.entities.length > 2 ? "large" : "big"
+                          }
+                          basic
+                        >
                           {entity.entityName}
                           <Label.Detail>{entity.catNo}</Label.Detail>
                         </Label>
