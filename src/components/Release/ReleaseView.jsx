@@ -50,67 +50,73 @@ const ReleaseView = (props) => {
               height: 250,
             }}
           >
-            <Grid.Column width={10}>
+            <Grid.Column width={13}>
               <div
                 style={{
                   bottom: 0,
-                  position: "absolute",
-                  fontFamily: "sans-serif",
-                  color: "white",
-                  lineHeight: "50px",
-                  textShadow: "3px 3px #000",
-                }}
-              >
-                <Link to={"/artist/" + props.release.albumArtist}>
-                  <span
-                    style={{
-                      fontSize: props.release.albumArtist.length > 70 ? 50 : 75,
-                      fontWeight: "bold",
-                      color: "white",
-                      fontFamily: "'Oswald', sans-serif",
-                    }}
-                  >
-                    {props.release.albumArtist}
-                  </span>
-                </Link>
-                <br />
-                <span
-                  style={{
-                    fontSize: props.release.title.length > 70 ? 25 : 50,
-                    color: "white",
-                    fontFamily: "'Oswald', sans-serif",
-                    textTransform: "uppercase",
-                  }}
-                >
-                  {props.release.title} (
-                  {props.release.releaseDateFormatted !== ""
-                    ? props.release.releaseDateFormatted + ", "
-                    : null}
-                  {props.release.country})
-                </span>
-              </div>
-            </Grid.Column>
-            <Grid.Column width={6} align='right'>
-              <div
-                style={{
-                  float: "right",
-                  marginRight: 0,
-                  bottom: 0,
-                  textAlign: "right",
+                  float: "left",
+                  marginRight: 10,
                 }}
               >
                 {props.release.images !== null ? (
                   props.release.images.length > 0 ? (
-                    <div style={{ border: "1px solid #000" }}>
+                    <div style={{ border: "1px solid #666" }}>
                       <img
                         src={props.release.images[0].uri}
-                        style={{ maxHeight: 230 }}
+                        style={{
+                          maxHeight: 230,
+                        }}
                         alt='artwork'
                       />
                     </div>
                   ) : null
                 ) : null}
               </div>
+              <div
+                style={{
+                  bottom: 0,
+                  fontFamily: "sans-serif",
+                  color: "white",
+                  lineHeight: "50px",
+                  textShadow: "3px 3px #000",
+                  height: "100%",
+                  position: "relative",
+                  display: "flex",
+                }}
+              >
+                <div style={{ display: "inline-block", alignSelf: "flex-end" }}>
+                  <Link to={"/artist/" + props.release.albumArtist}>
+                    <span
+                      style={{
+                        fontSize:
+                          props.release.albumArtist.length > 70 ? 50 : 75,
+                        fontWeight: "bold",
+                        color: "white",
+                        fontFamily: "'Oswald', sans-serif",
+                      }}
+                    >
+                      {props.release.albumArtist}
+                    </span>
+                  </Link>
+                  <br />
+                  <span
+                    style={{
+                      fontSize: props.release.title.length > 70 ? 25 : 50,
+                      color: "white",
+                      fontFamily: "'Oswald', sans-serif",
+                      textTransform: "uppercase",
+                    }}
+                  >
+                    {props.release.title} (
+                    {props.release.releaseDateFormatted !== ""
+                      ? props.release.releaseDateFormatted + ", "
+                      : null}
+                    {props.release.country})
+                  </span>
+                </div>
+              </div>
+            </Grid.Column>
+            <Grid.Column width={3} align='right'>
               <div
                 style={{
                   float: "right",

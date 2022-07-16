@@ -51,7 +51,7 @@ function AudioPlayer(props) {
     <div style={{ width: "100%" }}>
       <audio
         src={
-          "http://localhost:5000/Release/audio?releaseTrackId=" +
+          "http://knossos/music-api/Release/audio?releaseTrackId=" +
           props.audio.currentTrack.releaseTrackId
         }
         ref={audioEl}

@@ -10,6 +10,7 @@ import {
   Dropdown,
   Label,
   LabelDetail,
+  Popup,
 } from "semantic-ui-react";
 
 import { runApi } from "../../services/services";
@@ -24,11 +25,13 @@ const Releases = ({ toggleDiscogs }) => {
   const [tableData, setTableData] = useState(null);
   const [filter, setFilter] = useState({
     page: 1,
-    resultsPerPage: 15,
+    resultsPerPage: 32,
   });
 
   const [currentPage, setCurrentPage] = useState(1);
   const [pageNumbers, setPageNumbers] = useState([]);
+
+  const [view, setView] = useState("table");
 
   // Filters
   const [artistOptions, setArtistOptions] = useState(null);
@@ -258,21 +261,41 @@ const Releases = ({ toggleDiscogs }) => {
                   </Grid.Column>
                 </Grid.Row>
                 <Grid.Row>
-                  <Grid.Column width={2}>
-                    <Button
-                      color='blue'
-                      size='mini'
-                      onClick={() => {
-                        setCurrentPage(1);
-                        let f = { ...filter };
-                        f.page = 1;
-                        setFilter(f);
-                        getReleases();
-                      }}
-                    >
-                      <Icon name='search'></Icon>
-                      Search
-                    </Button>
+                  <Grid.Column width={16}>
+                    <div style={{ float: "left" }}>
+                      <Button
+                        color='blue'
+                        size='mini'
+                        onClick={() => {
+                          setCurrentPage(1);
+                          let f = { ...filter };
+                          f.page = 1;
+                          setFilter(f);
+                          getReleases();
+                        }}
+                      >
+                        <Icon name='search'></Icon>
+                        Search
+                      </Button>
+                    </div>
+                    <div style={{ float: "right" }}>
+                      <Button
+                        basic={view !== "table"}
+                        onClick={() => setView("table")}
+                      >
+                        <Button.Content>
+                          <Icon name='list layout' />
+                        </Button.Content>
+                      </Button>
+                      <Button
+                        basic={view !== "grid"}
+                        onClick={() => setView("grid")}
+                      >
+                        <Button.Content>
+                          <Icon name='grid layout' />
+                        </Button.Content>
+                      </Button>
+                    </div>
                   </Grid.Column>
                 </Grid.Row>
               </Grid>
@@ -282,156 +305,228 @@ const Releases = ({ toggleDiscogs }) => {
         <Grid.Row>
           <Grid.Column width={16}>
             {tableData !== null ? (
-              <Table compact>
-                <Table.Header>
-                  <Table.Row>
-                    <Table.HeaderCell colSpan='11'>
+              view === "grid" ? (
+                <>
+                  <Segment>
+                    <div>
                       <Paging
                         pageNumbers={pageNumbers}
                         currentPage={currentPage}
                         setPage={setPage}
                         setCurrentPage={setCurrentPage}
                       />
-                    </Table.HeaderCell>
-                  </Table.Row>
-                </Table.Header>
-                <Table.Body>
-                  {tableData.data.map((release) => {
-                    return (
-                      <Table.Row
-                        key={release.id}
-                        style={{
-                          backgroundColor: !release.own
-                            ? "rgb(240,240,240)"
-                            : release.totalTracks === release.rippedTracks
-                            ? ""
-                            : "",
-                        }}
-                      >
-                        <Table.Cell
+                    </div>
+                  </Segment>
+                  <div style={{ paddingLeft: 15 }}>
+                    {tableData.data.map((release) => {
+                      return (
+                        <Link to={"/release/" + release.releaseId}>
+                          <div
+                            style={{
+                              float: "left",
+                              border: "1px solid #333",
+                              margin: "0 10px 10px 0",
+                            }}
+                          >
+                            {release.images !== null ? (
+                              release.images.length > 0 ? (
+                                <Popup
+                                  content={
+                                    <>
+                                      <span style={{ fontWeight: "bold" }}>
+                                        {release.albumArtist}
+                                      </span>
+                                      <br />
+                                      <span style={{ fontStyle: "italic" }}>
+                                        {release.title} (
+                                        {release.releaseDateFormatted})
+                                      </span>
+                                    </>
+                                  }
+                                  trigger={
+                                    <img
+                                      src={release.images[0].uri}
+                                      style={{
+                                        height: 200,
+                                        filter: !release.own
+                                          ? "grayscale(100%)"
+                                          : "none",
+                                        opacity:
+                                          release.totalTracks ===
+                                          release.rippedTracks
+                                            ? 1
+                                            : 0.5,
+                                      }}
+                                      alt='artwork'
+                                    />
+                                  }
+                                />
+                              ) : null
+                            ) : null}
+                          </div>
+                        </Link>
+                      );
+                    })}
+                  </div>
+                </>
+              ) : (
+                <Table compact>
+                  <Table.Header>
+                    <Table.Row>
+                      <Table.HeaderCell colSpan='11'>
+                        <Paging
+                          pageNumbers={pageNumbers}
+                          currentPage={currentPage}
+                          setPage={setPage}
+                          setCurrentPage={setCurrentPage}
+                        />
+                      </Table.HeaderCell>
+                    </Table.Row>
+                  </Table.Header>
+                  <Table.Body>
+                    {tableData.data.map((release) => {
+                      return (
+                        <Table.Row
+                          key={release.id}
                           style={{
-                            borderLeft:
-                              release.releaseType === "Album"
-                                ? "10px solid #2185d0"
-                                : release.releaseType === "EP"
-                                ? "10px solid #00b5ad"
-                                : release.releaseType === "Single"
-                                ? "10px solid #21ba45"
-                                : release.releaseType === "Compilation"
-                                ? "10px solid #fbbd08"
-                                : "10px solid #cccccc",
+                            backgroundColor: !release.own
+                              ? "rgb(240,240,240)"
+                              : release.totalTracks === release.rippedTracks
+                              ? ""
+                              : "",
                           }}
-                        ></Table.Cell>
-                        <Table.Cell>
-                          {release.own ? (
-                            <Icon
-                              name={
-                                release.totalTracks === release.rippedTracks
-                                  ? "folder"
-                                  : "folder outline"
-                              }
-                              size='large'
-                              style={{
-                                color:
+                        >
+                          <Table.Cell
+                            style={{
+                              borderLeft:
+                                release.releaseType === "Album"
+                                  ? "10px solid #2185d0"
+                                  : release.releaseType === "EP"
+                                  ? "10px solid #00b5ad"
+                                  : release.releaseType === "Single"
+                                  ? "10px solid #21ba45"
+                                  : release.releaseType === "Compilation"
+                                  ? "10px solid #fbbd08"
+                                  : "10px solid #cccccc",
+                            }}
+                          ></Table.Cell>
+                          <Table.Cell>
+                            {release.own ? (
+                              <Icon
+                                name={
                                   release.totalTracks === release.rippedTracks
-                                    ? "#fed840"
-                                    : release.rippedTracks === 0
-                                    ? "#dddddd"
-                                    : "orange",
-                              }}
-                            />
-                          ) : null}
-                        </Table.Cell>
-                        <Table.Cell>
-                          <img
-                            src={
-                              process.env.REACT_APP_CORE_API +
-                              "Release/formatIcon/" +
-                              release.formatString
-                            }
-                            style={{ height: 40, marginRight: 7 }}
-                          />
-                        </Table.Cell>
-                        <Table.Cell>
-                          {release.images !== null ? (
-                            release.images.length > 0 ? (
-                              <img
-                                src={release.images[0].uri}
-                                style={{ height: 50 }}
-                                alt='artwork'
+                                    ? "folder"
+                                    : "folder outline"
+                                }
+                                size='large'
+                                style={{
+                                  color:
+                                    release.totalTracks === release.rippedTracks
+                                      ? "#fed840"
+                                      : release.rippedTracks === 0
+                                      ? "#dddddd"
+                                      : "orange",
+                                }}
                               />
-                            ) : null
-                          ) : null}
-                        </Table.Cell>
-                        <Table.Cell>
-                          <Link to={"/artist/" + release.albumArtist}>
-                            <span style={{ fontSize: 16, fontWeight: "bold" }}>
-                              {release.albumArtist}
+                            ) : null}
+                          </Table.Cell>
+                          <Table.Cell>
+                            <img
+                              src={
+                                process.env.REACT_APP_CORE_API +
+                                "Release/formatIcon/" +
+                                release.formatString
+                              }
+                              style={{ height: 40, marginRight: 7 }}
+                            />
+                          </Table.Cell>
+                          <Table.Cell>
+                            {release.images !== null ? (
+                              release.images.length > 0 ? (
+                                <img
+                                  src={release.images[0].uri}
+                                  style={{ height: 50 }}
+                                  alt='artwork'
+                                />
+                              ) : null
+                            ) : null}
+                          </Table.Cell>
+                          <Table.Cell>
+                            <Link to={"/artist/" + release.albumArtist}>
+                              <span
+                                style={{ fontSize: 16, fontWeight: "bold" }}
+                              >
+                                {release.albumArtist}
+                              </span>
+                            </Link>
+                            <br />
+                            <span style={{ fontSize: 15 }}>
+                              {toggleDiscogs ? (
+                                <Link
+                                  to={"/discogsRelease/" + release.discogsId}
+                                >
+                                  {release.title}
+                                </Link>
+                              ) : (
+                                <Link to={"/release/" + release.releaseId}>
+                                  {release.title}
+                                </Link>
+                              )}
                             </span>
-                          </Link>
-                          <br />
-                          <span style={{ fontSize: 15 }}>
-                            {toggleDiscogs ? (
-                              <Link to={"/discogsRelease/" + release.discogsId}>
-                                {release.title}
-                              </Link>
-                            ) : (
-                              <Link to={"/release/" + release.releaseId}>
-                                {release.title}
-                              </Link>
-                            )}
-                          </span>
-                        </Table.Cell>
-                        <Table.Cell>
-                          <span style={{ fontSize: 16, marginRight: 10 }}>
-                            {release.releaseDateFormatted}
-                          </span>
-                          &nbsp;
-                          {release.country}
-                        </Table.Cell>
-                        <Table.Cell>
-                          {release.formatDescriptions !== null
-                            ? release.formatDescriptions.map((description) => {
-                                return (
-                                  <FormatDescription
-                                    description={description.description}
-                                  />
-                                );
-                              })
-                            : null}
-                        </Table.Cell>
-                        <Table.Cell>
-                          {release.labels !== null
-                            ? release.labels.map((label) => {
-                                return (
-                                  <Label
-                                    basic
-                                    size={
-                                      release.labels.length > 1
-                                        ? "medium"
-                                        : "large"
-                                    }
-                                    style={{ borderRadius: 0 }}
-                                  >
-                                    {label.entity}
-                                    <LabelDetail>{label.catNo}</LabelDetail>
-                                  </Label>
-                                );
-                              })
-                            : null}
-                        </Table.Cell>
-                        <Table.Cell>
-                          {release.genres !== null
-                            ? release.genres.map((genre) => {
-                                return <Genre genre={genre.name} />;
-                              })
-                            : null}
-                        </Table.Cell>
-                      </Table.Row>
-                    );
-                  })}
-                </Table.Body>
-              </Table>
+                          </Table.Cell>
+                          <Table.Cell>
+                            <span style={{ fontSize: 16, marginRight: 10 }}>
+                              {release.releaseDateFormatted}
+                            </span>
+                            &nbsp;
+                            {release.country}
+                          </Table.Cell>
+                          <Table.Cell>
+                            {release.formatDescriptions !== null
+                              ? release.formatDescriptions.map(
+                                  (description) => {
+                                    return (
+                                      <FormatDescription
+                                        description={description.description}
+                                      />
+                                    );
+                                  }
+                                )
+                              : null}
+                          </Table.Cell>
+                          <Table.Cell>
+                            {release.labels !== null
+                              ? release.labels.map((label) => {
+                                  return (
+                                    <Label
+                                      basic
+                                      size={
+                                        release.labels.length > 1
+                                          ? "medium"
+                                          : "large"
+                                      }
+                                      style={{ borderRadius: 0 }}
+                                    >
+                                      {label.entity}
+                                      <LabelDetail>{label.catNo}</LabelDetail>
+                                    </Label>
+                                  );
+                                })
+                              : null}
+                          </Table.Cell>
+                          <Table.Cell>
+                            {release.genres !== null
+                              ? release.genres.map((genre) => {
+                                  return <Genre genre={genre.name} />;
+                                })
+                              : null}
+                          </Table.Cell>
+                        </Table.Row>
+                      );
+                    })}
+                  </Table.Body>
+                </Table>
+              )
             ) : null}
           </Grid.Column>
         </Grid.Row>
